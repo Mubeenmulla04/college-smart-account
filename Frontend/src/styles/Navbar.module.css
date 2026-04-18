@@ -1,0 +1,426 @@
+/* Simple Modern Navbar Styles */
+.navbar {
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: all 0.2s ease;
+}
+
+.navbarContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 4rem;
+}
+
+.navbarBrand {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  text-decoration: none;
+  color: inherit;
+  font-weight: 700;
+  font-size: var(--font-size-lg);
+  transition: transform var(--transition-normal);
+}
+
+.navbarBrand:hover {
+  transform: scale(1.05);
+}
+
+.navbarLogo {
+  width: 2.5rem;
+  height: 2.5rem;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.navbarLogo::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 100%);
+}
+
+.navbarLogoIcon {
+  color: white;
+  font-size: 1.25rem;
+  font-weight: bold;
+  position: relative;
+  z-index: 1;
+}
+
+.navbarTitle {
+  background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-800) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 800;
+}
+
+.navbarNav {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-6);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navItem {
+  position: relative;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-3);
+  color: var(--gray-700);
+  text-decoration: none;
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.navLink::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, var(--primary-50) 0%, transparent 100%);
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+}
+
+.navLink:hover {
+  color: var(--primary-700);
+  background-color: var(--primary-50);
+  transform: translateY(-1px);
+}
+
+.navLink:hover::before {
+  opacity: 1;
+}
+
+.navLink.active {
+  color: var(--primary-700);
+  background-color: var(--primary-100);
+  font-weight: 600;
+}
+
+.navIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+  position: relative;
+  z-index: 1;
+}
+
+.navText {
+  position: relative;
+  z-index: 1;
+}
+
+.userMenu {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  position: relative;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-3);
+  background: var(--gray-50);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--gray-200);
+  transition: all var(--transition-normal);
+  cursor: pointer;
+}
+
+.userInfo:hover {
+  background: var(--gray-100);
+  border-color: var(--gray-300);
+  transform: translateY(-1px);
+}
+
+.userAvatar {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-700) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.userAvatar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 100%);
+}
+
+.userName {
+  font-weight: 600;
+  color: var(--gray-800);
+  font-size: var(--font-size-sm);
+  position: relative;
+  z-index: 1;
+}
+
+.userRole {
+  color: var(--gray-600);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  position: relative;
+  z-index: 1;
+}
+
+.logoutButton {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-4);
+  background-color: var(--danger-600);
+  background: linear-gradient(135deg, var(--danger-500) 0%, var(--danger-700) 100%);
+  color: white;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.logoutButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left var(--transition-slow);
+}
+
+.logoutButton:hover::before {
+  left: 100%;
+}
+
+.logoutButton:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.logoutButton:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3);
+}
+
+.logoutIcon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Mobile Menu */
+.mobileMenuButton {
+  display: none;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: var(--spacing-2);
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: background-color var(--transition-normal);
+}
+
+.mobileMenuButton:hover {
+  background-color: var(--gray-100);
+}
+
+.mobileMenuLine {
+  width: 1.5rem;
+  height: 2px;
+  background-color: var(--gray-700);
+  transition: all var(--transition-normal);
+}
+
+.mobileMenuButton.active .mobileMenuLine:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.mobileMenuButton.active .mobileMenuLine:nth-child(2) {
+  opacity: 0;
+}
+
+.mobileMenuButton.active .mobileMenuLine:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -6px);
+}
+
+.mobileMenu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--gray-200);
+  box-shadow: var(--shadow-lg);
+  padding: var(--spacing-4);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mobileNav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.mobileNavItem {
+  width: 100%;
+}
+
+.mobileNavLink {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-3);
+  color: var(--gray-700);
+  text-decoration: none;
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-normal);
+  width: 100%;
+}
+
+.mobileNavLink:hover {
+  background-color: var(--primary-50);
+  color: var(--primary-700);
+}
+
+.mobileNavLink.active {
+  background-color: var(--primary-100);
+  color: var(--primary-700);
+  font-weight: 600;
+}
+
+.mobileUserInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-4);
+  background: var(--gray-50);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--gray-200);
+  margin-bottom: var(--spacing-4);
+}
+
+.mobileLogoutButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3);
+  background-color: var(--danger-600);
+  background: linear-gradient(135deg, var(--danger-500) 0%, var(--danger-700) 100%);
+  color: white;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  width: 100%;
+  box-shadow: var(--shadow-sm);
+}
+
+.mobileLogoutButton:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .navbarNav {
+    display: none;
+  }
+  
+  .userMenu {
+    display: none;
+  }
+  
+  .mobileMenuButton {
+    display: flex;
+  }
+  
+  .mobileMenu.show {
+    display: block;
+  }
+  
+  .navbarContainer {
+    height: 3.5rem;
+  }
+  
+  .navbarLogo {
+    width: 2rem;
+    height: 2rem;
+  }
+  
+  .navbarTitle {
+    font-size: var(--font-size-base);
+  }
+}
+
+
+/* Removed dark mode support to enforce light theme */

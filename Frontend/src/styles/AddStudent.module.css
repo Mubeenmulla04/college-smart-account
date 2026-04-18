@@ -1,0 +1,343 @@
+/* Modern AddStudent Styles */
+.addStudentContainer {
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--gray-50) 0%, var(--primary-50) 100%);
+  padding: var(--spacing-6);
+  position: relative;
+}
+
+.addStudentContainer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="%23e5e7eb" opacity="0.3"/></pattern></defs><rect width="100" height="100" fill="url(%23dots)"/></svg>');
+  pointer-events: none;
+}
+
+.addStudentContent {
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.addStudentHeader {
+  text-align: center;
+  margin-bottom: var(--spacing-8);
+  padding: var(--spacing-6) 0;
+}
+
+.addStudentTitle {
+  font-size: var(--font-size-4xl);
+  font-weight: 800;
+  color: var(--gray-900);
+  margin-bottom: var(--spacing-2);
+  background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-800) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.addStudentSubtitle {
+  color: var(--gray-600);
+  font-size: var(--font-size-lg);
+  font-weight: 500;
+}
+
+.addStudentForm {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-xl);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: var(--spacing-8);
+  animation: slideUp 0.6s ease-out;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: var(--spacing-6);
+  margin-bottom: var(--spacing-8);
+}
+
+@media (min-width: 768px) {
+  .formGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.formLabel {
+  font-weight: 600;
+  color: var(--gray-700);
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.formLabel::before {
+  content: '📝';
+  font-size: 1rem;
+}
+
+.formInput,
+.formSelect,
+.formTextarea {
+  padding: var(--spacing-3) var(--spacing-4);
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-base);
+  transition: all var(--transition-normal);
+  background-color: white;
+  color: var(--gray-800);
+}
+
+.formInput:focus,
+.formSelect:focus,
+.formTextarea:focus {
+  outline: none;
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  transform: translateY(-1px);
+}
+
+.formInput.error,
+.formSelect.error,
+.formTextarea.error {
+  border-color: var(--danger-500);
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.formTextarea {
+  resize: vertical;
+  min-height: 100px;
+  font-family: inherit;
+}
+
+.errorMessage {
+  color: var(--danger-600);
+  font-size: var(--font-size-sm);
+  margin-top: var(--spacing-1);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.errorMessage::before {
+  content: '⚠️';
+  font-size: var(--font-size-sm);
+}
+
+.formActions {
+  display: flex;
+  gap: var(--spacing-4);
+  justify-content: flex-end;
+  align-items: center;
+  padding-top: var(--spacing-6);
+  border-top: 1px solid var(--gray-200);
+}
+
+.submitButton {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3) var(--spacing-6);
+  background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-700) 100%);
+  color: white;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-weight: 600;
+  font-size: var(--font-size-base);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.submitButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left var(--transition-slow);
+}
+
+.submitButton:hover::before {
+  left: 100%;
+}
+
+.submitButton:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.submitButton:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.submitButton:disabled:hover {
+  transform: none;
+  box-shadow: var(--shadow-md);
+}
+
+.cancelButton {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3) var(--spacing-6);
+  background: var(--gray-100);
+  color: var(--gray-700);
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius-lg);
+  font-weight: 500;
+  font-size: var(--font-size-base);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.cancelButton:hover {
+  background: var(--gray-200);
+  border-color: var(--gray-400);
+  transform: translateY(-1px);
+}
+
+.submitIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* Loading State */
+.loading {
+  position: relative;
+  color: transparent;
+}
+
+.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1rem;
+  height: 1rem;
+  margin: -0.5rem 0 0 -0.5rem;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Success Message */
+.successMessage {
+  background: var(--success-50);
+  border: 1px solid var(--success-200);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-4);
+  margin-bottom: var(--spacing-6);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  color: var(--success-700);
+  font-weight: 500;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.successMessage::before {
+  content: '✅';
+  font-size: 1.25rem;
+}
+
+/* Form Sections */
+.formSection {
+  margin-bottom: var(--spacing-8);
+}
+
+.sectionTitle {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: var(--spacing-4);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding-bottom: var(--spacing-2);
+  border-bottom: 2px solid var(--gray-200);
+}
+
+.sectionTitle::before {
+  content: '👤';
+  font-size: 1.5rem;
+}
+
+.personalInfo .sectionTitle::before {
+  content: '👤';
+}
+
+.academicInfo .sectionTitle::before {
+  content: '🎓';
+}
+
+.financialInfo .sectionTitle::before {
+  content: '💰';
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .addStudentContainer {
+    padding: var(--spacing-4);
+  }
+  
+  .addStudentForm {
+    padding: var(--spacing-6);
+  }
+  
+  .addStudentTitle {
+    font-size: var(--font-size-3xl);
+  }
+  
+  .formActions {
+    flex-direction: column;
+    gap: var(--spacing-3);
+  }
+  
+  .submitButton,
+  .cancelButton {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+
+/* Removed dark mode support to enforce light theme */

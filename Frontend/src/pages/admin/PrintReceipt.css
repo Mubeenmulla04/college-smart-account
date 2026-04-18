@@ -1,0 +1,175 @@
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 40px;
+  color: #111827;
+  line-height: 1.6;
+  background: #ffffff;
+  font-size: 10pt;
+}
+
+.receiptContainer {
+  max-width: 800px;
+  margin: 0 auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 2rem;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.receiptHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 3px solid #2dd4bf;
+  position: relative;
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+}
+
+.receiptHeader::before {
+  content: '';
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 80px;
+  background: url('https://via.placeholder.com/80?text=Logo') no-repeat center;
+  background-size: contain;
+}
+
+.receiptTitle {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0;
+}
+
+.receiptSubtitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-top: 0.5rem;
+  font-weight: 400;
+}
+
+.receiptDetails {
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  background: #f8fafc;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+}
+
+.detailLabel {
+  font-weight: 500;
+  color: #374151;
+}
+
+.section {
+  margin-bottom: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.sectionTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 0.75rem;
+  position: relative;
+}
+
+.sectionTitle::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 50px;
+  height: 2px;
+  background: linear-gradient(90deg, #2dd4bf, #fb7185);
+}
+
+.studentInfo {
+  font-size: 0.875rem;
+  color: #4b5563;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+.feeBreakdown {
+  font-size: 0.875rem;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 0.75rem;
+  background: #f8fafc;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.total {
+  font-weight: 600;
+  font-size: 1rem;
+  border-top: 2px solid #2dd4bf;
+  padding-top: 1rem;
+  background: linear-gradient(90deg, #2dd4bf10, #fb718510);
+  padding: 1rem;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.paymentHistory {
+  font-size: 0.875rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.paymentItem {
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 0.75rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.noHistory {
+  color: #6b7280;
+  font-style: italic;
+  text-align: center;
+  padding: 1rem;
+}
+
+.receiptFooter {
+  text-align: center;
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-style: italic;
+}
+
+@media print {
+  body { margin: 0; }
+  .receiptContainer { box-shadow: none; border: none; }
+  .noPrint { display: none; }
+}

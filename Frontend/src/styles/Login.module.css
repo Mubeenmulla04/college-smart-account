@@ -1,0 +1,203 @@
+/* Login.module.css */
+
+/* Page container */
+.loginContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e0f2fe, #f0f9ff, #dbeafe);
+}
+
+/* Form wrapper */
+.loginForm {
+  width: 100%;
+  max-width: 420px;
+}
+
+/* Card */
+.loginCard {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+/* Header */
+.loginHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.loginLogo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.8rem;
+}
+
+.loginLogoIcon {
+  font-size: 2.6rem;
+}
+
+.loginTitle {
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.3rem;
+}
+
+.loginSubtitle {
+  font-size: 0.95rem;
+  color: #64748b;
+}
+
+.signupLink {
+  color: #0284c7;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.signupLink:hover {
+  text-decoration: underline;
+}
+
+/* Form */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.roleSelect,
+.emailInput,
+.passwordInput {
+  padding: 0.8rem 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.65rem;
+  font-size: 0.95rem;
+  background: #f8fafc;
+  transition: all 0.25s ease;
+}
+
+.roleSelect:focus,
+.emailInput:focus,
+.passwordInput:focus {
+  outline: none;
+  border-color: #0ea5e9;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.2);
+}
+
+.inputError {
+  border-color: #dc2626 !important;
+  background: #fef2f2;
+}
+
+/* Errors */
+.errorMessage {
+  font-size: 0.8rem;
+  color: #dc2626;
+  margin-top: -0.6rem;
+}
+
+.generalError {
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 0.75rem;
+  border-radius: 0.6rem;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Button */
+.submitButton {
+  background: linear-gradient(90deg, #0ea5e9, #2563eb);
+  color: #fff;
+  border: none;
+  border-radius: 0.65rem;
+  padding: 0.9rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  width: 100%;
+}
+
+.submitButton:hover {
+  background: linear-gradient(90deg, #0284c7, #1d4ed8);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
+}
+
+.submitButton:disabled {
+  background: #93c5fd;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Forgot password */
+.forgotPasswordLink {
+  display: block;
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #0284c7;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.forgotPasswordLink:hover {
+  text-decoration: underline;
+}
+
+
+/* Make all inputs uniform width */
+.inputGroup,
+.passwordContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.emailInput,
+.passwordInput,
+.roleSelect {
+  width: 100%; /* Force full width */
+  padding: 0.8rem 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.65rem;
+  font-size: 0.95rem;
+  background: #f8fafc;
+  transition: all 0.25s ease;
+}
+
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.backToLogin{
+  display: flex;
+  justify-content: center;
+  margin-right: 2rem;
+  
+}
+.backLink{
+  color: lightgreen;
+  text-decoration: none;
+}
+.backLink:hover{
+  text-decoration: underline;
+  color: green;
+}

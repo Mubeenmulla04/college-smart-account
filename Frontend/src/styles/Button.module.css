@@ -1,0 +1,186 @@
+/* Simple Modern Button Styles */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3) var(--spacing-4);
+  border: none;
+  border-radius: 8px;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  outline: none;
+}
+
+/* Button Variants */
+.primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  color: white;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+}
+
+.primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+}
+
+.primary:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+.secondary {
+  background: white;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.secondary:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.secondary:focus {
+  box-shadow: 0 0 0 3px rgba(156, 163, 175, 0.3);
+}
+
+.success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+}
+
+.success:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+}
+
+.warning {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);
+}
+
+.warning:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(245, 158, 11, 0.3);
+}
+
+.danger {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+}
+
+.danger:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+}
+
+.ghost {
+  background: transparent;
+  color: #6b7280;
+  border: 1px solid transparent;
+}
+
+.ghost:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+/* Button Sizes */
+.small {
+  padding: var(--spacing-2) var(--spacing-3);
+  font-size: var(--font-size-xs);
+  border-radius: 6px;
+}
+
+.large {
+  padding: var(--spacing-4) var(--spacing-6);
+  font-size: var(--font-size-base);
+  border-radius: 10px;
+}
+
+.extraLarge {
+  padding: var(--spacing-5) var(--spacing-8);
+  font-size: var(--font-size-lg);
+  border-radius: 12px;
+}
+
+/* Button States */
+.loading {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.loading::before {
+  content: '';
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: var(--spacing-2);
+}
+
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Icon Only Button */
+.iconOnly {
+  padding: var(--spacing-2);
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.iconOnly.small {
+  width: 2rem;
+  height: 2rem;
+  padding: var(--spacing-1);
+}
+
+.iconOnly.large {
+  width: 3rem;
+  height: 3rem;
+  padding: var(--spacing-3);
+}
+
+/* Full Width */
+.fullWidth {
+  width: 100%;
+}
+
+/* Animations */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .button {
+    padding: var(--spacing-3) var(--spacing-4);
+    font-size: var(--font-size-sm);
+  }
+  
+  .large {
+    padding: var(--spacing-3) var(--spacing-5);
+    font-size: var(--font-size-base);
+  }
+  
+  .extraLarge {
+    padding: var(--spacing-4) var(--spacing-6);
+    font-size: var(--font-size-base);
+  }
+}

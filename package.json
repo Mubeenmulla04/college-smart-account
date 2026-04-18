@@ -1,0 +1,20 @@
+{
+  "name": "college-smart-account-root",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "frontend": "cd Frontend && npm run dev",
+    "backend": "cd Backend && npm start",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "seed": "cd Backend && npm run seed"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^17.4.2",
+    "mongoose": "^9.4.1"
+  }
+}

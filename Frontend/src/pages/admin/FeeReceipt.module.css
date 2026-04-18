@@ -1,0 +1,363 @@
+.receiptMainContainer {
+  background: linear-gradient(180deg, #f8fafc 0%, #e5e7eb 100%);
+  min-height: 100vh;
+  padding: 3rem 1rem;
+  font-family: 'Inter', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+.receiptMainContainer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #2dd4bf, #fb7185);
+}
+
+.receiptContentWrapper {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.receiptHeaderSection {
+  margin-bottom: 2.5rem;
+}
+
+.receiptHeaderContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 0 1rem;
+}
+
+.receiptHeaderTitle {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.025em;
+}
+
+.receiptHeaderSubtitle {
+  font-size: 1.125rem;
+  color: #6b7280;
+  margin-top: 0.5rem;
+}
+
+.receiptBackButton {
+  padding: 0.75rem 1.5rem;
+  background: #6b7280;
+  color: #ffffff;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.receiptBackButton:hover {
+  background: #4b5563;
+  transform: translateY(-2px);
+}
+
+.receiptGridLayout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 1024px) {
+  .receiptGridLayout {
+    grid-template-columns: 1fr 1.5fr;
+  }
+}
+
+.receiptSelectionCard,
+.receiptPreviewCard {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(229, 231, 235, 0.4);
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.receiptSelectionCard:hover,
+.receiptPreviewCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.receiptCardTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.receiptCardTitle::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  width: 50px;
+  height: 3px;
+  background: linear-gradient(90deg, #2dd4bf, #fb7185);
+}
+
+.receiptSelectGroup {
+  margin-bottom: 1.5rem;
+}
+
+.receiptSelectLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.receiptSelectInput {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.receiptSelectInput:focus {
+  border-color: #2dd4bf;
+  box-shadow: 0 0 10px rgba(45, 212, 191, 0.3);
+}
+
+.receiptInfoCard {
+  background: rgba(229, 231, 235, 0.2);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  margin-bottom: 1.5rem;
+}
+
+.receiptInfoTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 1rem;
+}
+
+.receiptInfoDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+
+.receiptInfoLabel {
+  font-weight: 500;
+  color: #374151;
+  margin-right: 0.5rem;
+}
+
+.receiptGenerateButton {
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(90deg, #2dd4bf, #fb7185);
+  color: #ffffff;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.receiptGenerateButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(45, 212, 191, 0.3);
+}
+
+.receiptButtonDisabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.receiptPreviewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.receiptActionButtons {
+  display: flex;
+  gap: 1rem;
+}
+
+.receiptPrintButton {
+  padding: 0.75rem 1.5rem;
+  background: #34d399;
+  color: #ffffff;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.receiptPrintButton:hover {
+  background: #22c55e;
+  transform: translateY(-2px);
+}
+
+.receiptDownloadButton {
+  padding: 0.75rem 1.5rem;
+  background: #a855f7;
+  color: #ffffff;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.receiptDownloadButton:hover {
+  background: #9333ea;
+  transform: translateY(-2px);
+}
+
+.receiptContent {
+  border: 1px solid #e5e7eb;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  background: #ffffff;
+}
+
+.receiptHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #2dd4bf;
+  padding-bottom: 1.5rem;
+}
+
+.receiptTitle {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.receiptSubtitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-top: 0.5rem;
+}
+
+.receiptDetails {
+  margin-bottom: 1.5rem;
+}
+
+.receiptDetailRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+
+.receiptDetailLabel {
+  font-weight: 500;
+  color: #374151;
+}
+
+.receiptSection {
+  margin-bottom: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 1rem;
+}
+
+.receiptSectionTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 0.75rem;
+}
+
+.receiptStudentInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+
+.receiptFeeBreakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.receiptTotal {
+  font-weight: 600;
+  font-size: 1.125rem;
+  border-top: 2px solid #2dd4bf;
+  padding-top: 0.75rem;
+}
+
+.receiptPaymentHistory {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.receiptPaymentItem {
+  font-size: 0.875rem;
+  color: #4b5563;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 0.5rem;
+}
+
+.receiptNoHistory {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.receiptFooter {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.receiptFooterText {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.receiptLoadingContainer {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+}
+
+.receiptLoadingSpinner {
+  width: 3.5rem;
+  height: 3.5rem;
+  border: 3px solid #e5e7eb;
+  border-top-color: #2dd4bf;
+  border-radius: 50%;
+  animation: receiptSpin 1s linear infinite;
+}
+
+.receiptLoadingText {
+  font-size: 1rem;
+  color: #6b7280;
+  margin-top: 1rem;
+}
+
+@keyframes receiptSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
