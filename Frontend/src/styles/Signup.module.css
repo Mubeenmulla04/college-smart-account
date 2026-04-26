@@ -1,211 +1,327 @@
 /* Signup.module.css */
 
-/* Page container */
-.signupContainer {
+/* ── Floating white card ─────────────────────────────────────── */
+.formCard {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.04), 0 0 0 1px rgba(226,232,240,0.5);
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+}
+
+/* ── Form header ─────────────────────────────────────────────── */
+.headerRow {
+  display: flex;
   align-items: center;
-  padding: 2rem;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #e0f2fe, #f0f9ff, #dbeafe);
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  position: relative;
 }
 
-/* Main form wrapper */
-.signupForm {
-  width: 100%;
-  max-width: 780px;
+.headerRow::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 80px;
+  height: 3px;
+  background: #5b52f0;
+  border-radius: 3px;
 }
 
-/* Card */
-.signupCard {
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 1rem;
-  padding: 2.5rem;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(12px);
-  animation: fadeIn 0.4s ease-in-out;
-}
-
-/* Header */
-.signupHeader {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.signupLogo {
+.headerTitle {
   display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.headerIcon {
+  width: 42px;
+  height: 42px;
+  background: #f0f4ff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  margin-bottom: 0.8rem;
+  color: #5b52f0;
+  flex-shrink: 0;
 }
 
-.signupLogoIcon {
-  font-size: 2.8rem;
+.headerText h1 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 0.2rem;
+  letter-spacing: -0.01em;
 }
 
-.signupTitle {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1e293b;
-  margin: 0.4rem 0;
-}
-
-.signupSubtitle {
-  font-size: 0.95rem;
+.headerText p {
+  font-size: 0.75rem;
   color: #64748b;
+  margin: 0;
 }
 
-.signupLoginLink {
-  color: #0284c7;
-  text-decoration: none;
+.stepTag {
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.35rem 0.7rem;
+  border-radius: 6px;
+}
+
+/* ── Form grids ──────────────────────────────────────────────── */
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.gridSingle {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+/* ── Info message (Phase 1/2) ────────────────────────────────── */
+.infoBox {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #f8faff;
+  border: 1px solid #e0e7ff;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.25rem;
+}
+
+.infoBox svg {
+  color: #5b52f0;
+  flex-shrink: 0;
+}
+
+.infoBox p {
+  font-size: 0.75rem;
+  color: #5b52f0;
+  margin: 0;
   font-weight: 500;
 }
 
-.signupLoginLink:hover {
-  text-decoration: underline;
-}
-
-/* Form layout */
-.signupFormContent {
+/* ── Actions row ─────────────────────────────────────────────── */
+.actions {
   display: flex;
-  flex-direction: column;
-  gap: 2rem;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 1rem;
+  margin-top: auto;
 }
 
-.signupFormSection {
-  display: flex;
-  flex-direction: column;
-  gap: 1.2rem;
-}
-
-.signupSectionTitle {
-  font-size: 1.15rem;
-  font-weight: 600;
-  color: #1e293b;
-  border-left: 4px solid #0ea5e9;
-  padding-left: 0.6rem;
-  margin-bottom: 0.3rem;
-}
-
-/* Grid system */
-.signupFormGrid {
+/* ── Features Bar (bottom) ───────────────────────────────────── */
+.featuresBar {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.4rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  padding: 0 0.5rem;
 }
 
-.signupFormGroup {
+.feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.featureIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid #cbd5e1;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.featureText h4 {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #334155;
+  margin: 0 0 0.2rem;
+}
+
+.featureText p {
+  font-size: 0.7rem;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* ── OTP / Other shared components ───────────────────────────── */
+.alertError {
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  color: #be123c;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.summaryStrip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #f8faff;
+  border: 1px solid #e0e7ff;
+  border-radius: 8px;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.75rem;
+  background: white;
+  border: 1px solid #e0e7ff;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #374151;
+  white-space: nowrap;
+}
+
+/* ── OTP Screen ──────────────────────────────────────────────── */
+.otpPage {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  align-items: center;
+  justify-content: center;
+  background: #eef0f8;
+}
+
+.otpCard {
+  width: 100%;
+  max-width: 440px;
+  background: white;
+  border-radius: 16px;
+  padding: 3rem 2.5rem;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.04);
   display: flex;
   flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+
+.otpIcon {
+  width: 70px;
+  height: 70px;
+  background: #f0f4ff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #5b52f0;
+  margin-bottom: 0.5rem;
+}
+
+.otpTitle {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+}
+
+.otpSub {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.devBadge, .successBanner {
+  font-size: 0.8rem;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
   width: 100%;
 }
+.devBadge { background: #fefce8; border: 1px solid #fef08a; color: #854d0e; }
+.successBanner { background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; }
 
-.signupFormGroup.fullWidth {
-  grid-column: span 2;
+.otpRow {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: center;
+  margin: 1rem 0;
 }
 
-/* Labels */
-.signupFormLabel {
-  font-size: 0.9rem;
-  font-weight: 500;
-  margin-bottom: 0.4rem;
-  color: #334155;
-}
-
-/* Inputs & Selects */
-.signupFormInput,
-.signupFormSelect,
-textarea.signupFormInput {
-  padding: 0.8rem 1rem;
-  border: 1px solid #cbd5e1;
-  border-radius: 0.65rem;
-  font-size: 0.95rem;
-  transition: all 0.25s ease;
-  background: #f8fafc;
-}
-
-.signupFormInput:focus,
-.signupFormSelect:focus,
-textarea.signupFormInput:focus {
+.otpDigit {
+  width: 48px;
+  height: 56px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  color: #0f172a;
+  background: #ffffff;
+  transition: all 0.2s;
   outline: none;
-  border-color: #0ea5e9;
-  background: #fff;
-  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.2);
 }
 
-/* Errors */
-.signupInputError {
-  border-color: #dc2626 !important;
-  background: #fef2f2;
+.otpDigit:focus {
+  border-color: #5b52f0;
+  box-shadow: 0 0 0 3px rgba(91,82,240,0.1);
 }
 
-.signupErrorMessage {
+.otpDigitErr {
+  border-color: #ef4444 !important;
+  background: #fff5f5 !important;
+}
+
+.otpErr {
   font-size: 0.8rem;
-  color: #dc2626;
-  margin-top: 0.3rem;
-}
-
-.signupGeneralError {
-  background: #fee2e2;
-  color: #b91c1c;
-  padding: 0.8rem;
-  border-radius: 0.6rem;
-  text-align: center;
-  font-weight: 500;
-}
-
-/* Success */
-.signupSuccessMessage {
-  background: #ecfdf5;
-  color: #047857;
-  padding: 0.8rem;
-  border-radius: 0.6rem;
-  text-align: center;
+  color: #ef4444;
   font-weight: 600;
+  margin: 0;
 }
 
-/* Buttons */
-.signupSubmitButton {
-  background: linear-gradient(90deg, #0ea5e9, #2563eb);
-  color: #fff;
+.backLink {
+  background: none;
   border: none;
-  border-radius: 0.65rem;
-  padding: 1rem;
-  font-size: 1rem;
+  color: #64748b;
+  font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.25s ease;
-  width: 100%;
+  margin-top: 1rem;
 }
 
-.signupSubmitButton:hover {
-  background: linear-gradient(90deg, #0284c7, #1d4ed8);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
-}
+.backLink:hover { color: #5b52f0; }
 
-.signupSubmitButton:disabled {
-  background: #93c5fd;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-.signupLoading {
-  background: #93c5fd !important;
-}
-
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .signupFormGrid {
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 860px) {
+  .formCard {
+    padding: 2rem 1.5rem;
+  }
+  .grid2 {
     grid-template-columns: 1fr;
   }
-  .signupFormGroup.fullWidth {
-    grid-column: span 1;
+  .featuresBar {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
 }

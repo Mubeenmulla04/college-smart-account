@@ -6,7 +6,11 @@ const adminSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   role: { type: String, default: 'admin' },
-  password: { type: String, required: true }
+  password: { type: String, required: true },
+  isVerified: { type: Boolean, default: false },
+  otp: String,
+  otpExpires: Date,
+  otpRetries: { type: Number, default: 0 }
 }, { timestamps: true });
 
 // Pre-save hook to hash password

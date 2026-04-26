@@ -11,16 +11,23 @@ import ForgotPassword from '../pages/common/ForgotPassword';
 import AdminDashboard from '../pages/admin/Dashboard';
 import AddStudent from '../pages/admin/AddStudent';
 import FeeReceipt from '../pages/admin/FeeReceipt';
+import AdminStudents from '../pages/admin/Students';
+import AdminStudentDetail from '../pages/admin/StudentDetail';
+import AdminDepartments from '../pages/admin/Departments';
+import AdminScholarships from '../pages/admin/AdminScholarships';
+import ScholarshipApplications from '../pages/admin/ScholarshipApplications';
 
 // Student Pages
 import StudentDashboard from '../pages/student/Dashboard';
 import Scholarship from '../pages/student/Scholarship';
 import FeePayment from '../pages/student/FeePayment';
 import Receipt from '../pages/student/Receipt';
+import PaymentHistory from '../pages/student/PaymentHistory';
 
 // Components
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import ScrollToTop from '../components/ScrollToTop';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -68,6 +75,7 @@ const AppRoutes = () => {
 
   return (
     <Router>
+      <ScrollToTop />
       <Routes>
         {/* Public Routes */}
         <Route path="/login" element={<Login />} />
@@ -103,6 +111,56 @@ const AppRoutes = () => {
             <ProtectedRoute allowedRoles={['admin']}>
               <Layout>
                 <FeeReceipt />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/students" 
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <Layout>
+                <AdminStudents />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/students/:id" 
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <Layout>
+                <AdminStudentDetail />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/departments" 
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <Layout>
+                <AdminDepartments />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/scholarships" 
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <Layout>
+                <AdminScholarships />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/scholarships/applications" 
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <Layout>
+                <ScholarshipApplications />
               </Layout>
             </ProtectedRoute>
           } 
@@ -145,6 +203,16 @@ const AppRoutes = () => {
             <ProtectedRoute allowedRoles={['student']}>
               <Layout>
                 <Receipt />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/student/payment-history" 
+          element={
+            <ProtectedRoute allowedRoles={['student']}>
+              <Layout>
+                <PaymentHistory />
               </Layout>
             </ProtectedRoute>
           } 

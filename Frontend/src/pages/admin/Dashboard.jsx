@@ -83,6 +83,13 @@ const AdminDashboard = () => {
   // Memoized stat cards data
   const statCards = useMemo(() => [
     {
+      icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />,
+      label: 'Total College Fees',
+      value: `₹${stats.totalFees.toLocaleString()}`,
+      color: 'green',
+      iconColor: 'statIconGreen'
+    },
+    {
       icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />,
       label: 'Total Students',
       value: stats.totalStudents,
@@ -90,27 +97,24 @@ const AdminDashboard = () => {
       iconColor: 'statIconBlue'
     },
     {
-      icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />,
-      label: 'Total Fees',
-      value: `₹${stats.totalFees.toLocaleString()}`,
-      color: 'green',
-      iconColor: 'statIconGreen'
-    },
-    {
       icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />,
-      label: 'Pending Fees',
+      label: 'Pending Collection',
       value: `₹${stats.pendingFees.toLocaleString()}`,
       color: 'yellow',
       iconColor: 'statIconYellow'
     },
     {
-      icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />,
-      label: 'Scholarship Applications',
+      icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />,
+      label: 'Scholarship Reviews',
       value: stats.scholarshipApplications,
       color: 'purple',
       iconColor: 'statIconPurple'
     }
   ], [stats]);
+
+  const collectionProgress = stats.totalFees > 0 
+    ? Math.round(((stats.totalFees - stats.pendingFees) / stats.totalFees) * 100) 
+    : 0;
 
   if (loading) {
     return (
@@ -179,6 +183,66 @@ const AdminDashboard = () => {
           ))}
         </div>
 
+        {/* Collection & Scholarship Overview Section (Mirrored from Student Dashboard style) */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '2rem', marginBottom: '2.5rem' }}>
+          
+          {/* Fee Collection Progress */}
+          <div className={styles.statCard} style={{ padding: '2rem' }}>
+            <h3 className={styles.sectionTitle} style={{ marginBottom: '1.5rem', fontSize: '1.125rem' }}>Fee Collection Progress</h3>
+            <div style={{ marginBottom: '1.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', fontSize: '0.9rem', color: '#64748b' }}>
+                <span style={{ fontWeight: '600' }}>Overall Recovery</span>
+                <span style={{ fontWeight: '700', color: '#3b82f6' }}>{collectionProgress}%</span>
+              </div>
+              <div style={{ width: '100%', height: '10px', backgroundColor: '#f1f5f9', borderRadius: '5px', overflow: 'hidden' }}>
+                <div 
+                  style={{ 
+                    height: '100%', 
+                    backgroundColor: '#3b82f6', 
+                    width: `${collectionProgress}%`,
+                    transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)',
+                    boxShadow: '0 0 10px rgba(59, 130, 246, 0.3)'
+                  }}
+                />
+              </div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div style={{ padding: '1rem', background: '#f0fdf4', borderRadius: '12px', border: '1px solid #bbf7d0' }}>
+                <p style={{ color: '#166534', fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', marginBottom: '0.25rem' }}>Collected</p>
+                <p style={{ color: '#15803d', fontSize: '1.25rem', fontWeight: '800' }}>₹{(stats.totalFees - stats.pendingFees).toLocaleString()}</p>
+              </div>
+              <div style={{ padding: '1rem', background: '#fff1f2', borderRadius: '12px', border: '1px solid #fecdd3' }}>
+                <p style={{ color: '#9f1239', fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', marginBottom: '0.25rem' }}>Outstanding</p>
+                <p style={{ color: '#be123c', fontSize: '1.25rem', fontWeight: '800' }}>₹{stats.pendingFees.toLocaleString()}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Scholarship Review Summary */}
+          <div className={styles.statCard} style={{ padding: '2rem' }}>
+            <h3 className={styles.sectionTitle} style={{ marginBottom: '1.5rem', fontSize: '1.125rem' }}>Scholarship Review Status</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', background: '#f8fafc', borderRadius: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <div style={{ width: '8px', height: '8px', background: '#3b82f6', borderRadius: '50%' }} />
+                  <span style={{ fontSize: '0.9rem', fontWeight: '600', color: '#475569' }}>Pending Review</span>
+                </div>
+                <span className={`${styles.statusBadge} ${styles.pending}`}>{stats.scholarshipApplications} Applications</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', background: '#f8fafc', borderRadius: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <div style={{ width: '8px', height: '8px', background: '#10b981', borderRadius: '50%' }} />
+                  <span style={{ fontSize: '0.9rem', fontWeight: '600', color: '#475569' }}>Recently Approved</span>
+                </div>
+                <span className={`${styles.statusBadge} ${styles.paid}`}>Check History</span>
+              </div>
+              <Link to="/admin/scholarships/applications" className={styles.viewAllLink} style={{ textAlign: 'center', marginTop: '0.5rem' }}>
+                View All Pending Applications →
+              </Link>
+            </div>
+          </div>
+        </div>
+
         {/* Quick Actions */}
         <div className={styles.quickActions}>
           <h2 className={styles.sectionTitle}>Quick Actions</h2>
@@ -197,7 +261,7 @@ const AdminDashboard = () => {
             </Link>
             <Link to="/admin/scholarships" className={styles.actionButton}>
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
               </svg>
               Manage Scholarships
             </Link>

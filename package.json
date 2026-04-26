@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "frontend": "cd Frontend && npm run dev",
-    "backend": "cd Backend && npm start",
+    "backend": "cd Backend && npm run dev",
     "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
     "seed": "cd Backend && npm run seed"
   },

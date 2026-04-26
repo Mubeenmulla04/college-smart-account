@@ -10,6 +10,15 @@ const Receipt = () => {
   const [loading, setLoading] = useState(true);
   const [selectedReceipt, setSelectedReceipt] = useState(null);
 
+  const formatDate = (dateStr) => {
+    if (!dateStr) return 'N/A';
+    try {
+      return new Date(dateStr).toLocaleDateString('en-IN', {
+        day: '2-digit', month: 'short', year: 'numeric'
+      });
+    } catch { return dateStr; }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -18,25 +27,55 @@ const Receipt = () => {
         setStudentData(data);
         
         if (data?.id) {
-          // Use student_id if available, otherwise fallback to id
-          const studentId = data.student_id || data.id;
-          console.log("Fetching receipts for studentId:", studentId, "from student data:", data);
-          const receiptData = await feeReceiptsAPI.getByStudentId(studentId);
-          console.log("Received receipt data:", receiptData);
-          
-          // Normalize receipt data to ensure consistent field names
-          const normalizedReceipts = Array.isArray(receiptData) ? 
-            receiptData.map(receipt => ({
-              ...receipt,
-              receiptNumber: receipt.receiptNumber || receipt.receipt_number || receipt.receipt_id || receipt.id,
-              paymentDate: receipt.paymentDate || receipt.date || receipt.payment_date,
-              paymentMethod: receipt.paymentMethod || receipt.payment_method,
-              description: receipt.description || receipt.desc,
-              status: receipt.status || 'Completed'
-            })) :
-            [];
-          
-          setReceipts(normalizedReceipts);
+          const studentId = data.studentId || data.id;
+
+          // --- Source 1: FeeReceipt collection ---
+          let dbReceipts = [];
+          try {
+            const receiptData = await feeReceiptsAPI.getByStudentId(studentId);
+            const receiptsArray = receiptData?.data || receiptData;
+            if (Array.isArray(receiptsArray)) {
+              dbReceipts = receiptsArray.map(r => ({
+                ...r,
+                receiptNumber: r.receiptNumber || r.id,
+                paymentDate: r.paymentDate || r.date || r.payment_date,
+                paymentMethod: r.paymentMethod || r.payment_method,
+                description: r.description || 'Fee Payment',
+                status: r.status || 'Completed',
+                _source: 'db'
+              }));
+            }
+          } catch (err) {
+            console.error('Error fetching FeeReceipt records:', err);
+          }
+
+          // --- Source 2: paymentHistory inside student profile ---
+          // These exist for payments made before the receipt system was fixed
+          const historyReceipts = (data?.fees?.paymentHistory || []).map(p => ({
+            receiptNumber: p.receiptNumber || p.receiptId || p.id,
+            paymentDate: p.date || p.paymentDate,
+            paymentMethod: p.method || p.paymentMethod,
+            amount: p.amount,
+            description: 'Fee Payment',
+            status: 'Completed',
+            _source: 'history'
+          }));
+
+          // --- Merge & deduplicate by receiptNumber ---
+          const dbReceiptNums = new Set(dbReceipts.map(r => r.receiptNumber));
+          const onlyHistory = historyReceipts.filter(
+            r => r.receiptNumber && !dbReceiptNums.has(r.receiptNumber)
+          );
+          const merged = [...dbReceipts, ...onlyHistory];
+
+          // Sort by date descending
+          merged.sort((a, b) => {
+            const da = new Date(a.paymentDate || a.createdAt || 0);
+            const db2 = new Date(b.paymentDate || b.createdAt || 0);
+            return db2 - da;
+          });
+
+          setReceipts(merged);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -49,6 +88,7 @@ const Receipt = () => {
       fetchData();
     }
   }, [user]);
+
 
   const generateReceiptPDF = (receipt) => {
     // Create a new window for the receipt
@@ -300,17 +340,17 @@ const Receipt = () => {
                 <div className={styles.statCardContent}>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', alignItems: 'center' }}>
                     <div>
-                      <h3 style={{ fontSize: '1.125rem', fontWeight: '600', color: '#1e293b', marginBottom: '0.5rem' }}>
-                        Receipt #{receipt.receiptNumber}
-                      </h3>
-                      <p style={{ color: '#64748b', fontSize: '0.875rem' }}>
+                      <h3 style={{ fontSize: '1rem', fontWeight: '600', color: '#1e293b', marginBottom: '0.25rem' }}>
                         {receipt.description || 'Fee Payment'}
+                      </h3>
+                      <p style={{ color: '#94a3b8', fontSize: '0.75rem', fontFamily: 'monospace', letterSpacing: '0.05em' }}>
+                        #{receipt.receiptNumber}
                       </p>
                     </div>
                     
                     <div>
                       <p style={{ fontSize: '0.875rem', color: '#64748b', marginBottom: '0.25rem' }}>Payment Date</p>
-                      <p style={{ fontWeight: '600', color: '#1e293b' }}>{receipt.paymentDate}</p>
+                      <p style={{ fontWeight: '600', color: '#1e293b' }}>{formatDate(receipt.paymentDate)}</p>
                     </div>
                     
                     <div>
@@ -334,7 +374,7 @@ const Receipt = () => {
                     <div style={{ display: 'flex', gap: '0.5rem' }}>
                       <button
                         onClick={() => generateReceiptPDF(receipt)}
-                        className={styles.actionButton}
+                        className={`${styles.actionButton} ${styles.primaryButton}`}
                         style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
                       >
                         <svg style={{ width: '1rem', height: '1rem', marginRight: '0.5rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -441,14 +481,13 @@ const Receipt = () => {
               <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem', justifyContent: 'center' }}>
                 <button
                   onClick={() => generateReceiptPDF(selectedReceipt)}
-                  className={styles.actionButton}
+                  className={`${styles.actionButton} ${styles.primaryButton}`}
                 >
                   Download PDF
                 </button>
                 <button
                   onClick={() => setSelectedReceipt(null)}
-                  className={styles.actionButton}
-                  style={{ backgroundColor: '#6b7280' }}
+                  className={`${styles.actionButton} ${styles.dangerButton}`}
                 >
                   Close
                 </button>

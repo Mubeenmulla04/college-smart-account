@@ -1,32 +1,40 @@
-import Student from '../../Database/Models/Student.js';
+import Student from '../models/Student.js';
 import mongoose from 'mongoose';
+import logger from '../utils/logger.js';
 
 export const getAllStudents = async (req, res) => {
   try {
-    const { email } = req.query;
+    const { email, search, department } = req.query;
     const { role, email: userEmail } = req.user;
     
     console.log('DEBUG: Full req.user:', JSON.stringify(req.user));
-    console.log('DEBUG: Query email:', email, 'Role:', role, 'UserEmail:', userEmail);
+    console.log('DEBUG: Query params:', { email, search, department }, 'Role:', role);
 
     // Security: Students can only fetch their own profile
     if (role === 'student') {
-      if (email && email.toLowerCase() === userEmail.toLowerCase()) {
-        const student = await Student.findOne({ email });
-        return res.json(student ? [student] : []);
-      }
-      console.warn(`Unauthorized student access attempt: ${userEmail} tried to access ${email}`);
-      return res.status(403).json({ error: 'Permission denied. Students can only access their own data.' });
+      const student = await Student.findOne({ email: userEmail });
+      return res.json(student ? [student] : []);
     }
 
-    // Admins can filter by email or list all
+    // Admins can filter
+    let query = {};
+    
     if (email) {
-      const student = await Student.findOne({ email });
-      res.json(student ? [student] : []);
-    } else {
-      const students = await Student.find().sort({ createdAt: -1 });
-      res.json(students);
+      query.email = email;
+    } else if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } },
+        { studentId: { $regex: search, $options: 'i' } }
+      ];
     }
+    
+    if (department) {
+      query.department = department;
+    }
+
+    const students = await Student.find(query).sort({ createdAt: -1 });
+    res.json(students);
   } catch (error) {
     console.error('Error fetching students:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -56,43 +64,51 @@ export const getStudentById = async (req, res) => {
 
 export const createStudent = async (req, res) => {
   try {
-    const { name, email, phone, department, year, address, password, fees, scholarship } = req.body;
+    const { 
+      studentId, name, email, phone, department, 
+      year, address, password, fees, scholarship 
+    } = req.body;
     
-    const existingStudent = await Student.findOne({ email });
+    logger.info(`DEBUG: Received fees: ${JSON.stringify(fees)}`);
+    logger.info(`DEBUG: Received scholarship: ${JSON.stringify(scholarship)}`);
+    logger.info(`DEBUG: Received studentId: ${studentId}`);
+    
+    const existingStudent = await Student.findOne({ 
+      $or: [{ email }, { studentId }] 
+    });
+    
     if (existingStudent) {
-      return res.status(409).json({ error: 'A student with this email already exists.' });
+      return res.status(409).json({ error: 'A student with this Email or PRN already exists.' });
     }
     
-    const studentId = `STU${Math.floor(1000 + Math.random() * 9000)}`;
-    
     const newStudent = new Student({
-      studentId,
+      studentId: studentId || `STU${Math.floor(1000 + Math.random() * 9000)}`,
       name,
       email,
       phone,
       department,
-      year: parseInt(year),
+      year: year ? parseInt(year) : undefined,
       address,
-      password,
-      fees: fees || {
-        total: 50000,
-        paid: 0,
-        pending: 50000,
-        paymentHistory: []
+      password: password || 'password123',
+      fees: {
+        total: Number(fees?.total) || 0,
+        paid: Number(fees?.paid) || 0,
+        pending: Number(fees?.pending ?? (fees?.total || 0)) || 0,
+        paymentHistory: Array.isArray(fees?.paymentHistory) ? fees.paymentHistory : []
       },
-      scholarship: scholarship || {
-        eligible: true,
-        applied: false,
-        status: 'Not Applied',
-        amount: 0,
-        documents: []
+      scholarship: {
+        eligible: scholarship?.eligible ?? true,
+        applied: scholarship?.applied ?? false,
+        status: scholarship?.status || 'Not Applied',
+        amount: Number(scholarship?.amount) || 0,
+        documents: Array.isArray(scholarship?.documents) ? scholarship.documents : []
       }
     });
     
     await newStudent.save();
     res.status(201).json(newStudent);
   } catch (error) {
-    console.error('Error creating student:', error);
+    logger.error('Error creating student:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };

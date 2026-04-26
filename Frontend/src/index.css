@@ -828,3 +828,38 @@ textarea:focus {
     text-shadow: none !important;
   }
 }
+
+/* Global Print Styles */
+@media print {
+  @page {
+    margin: 0;
+  }
+
+  nav, 
+  footer, 
+  .no-print {
+    display: none !important;
+  }
+  
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+  }
+
+  #root > div {
+    display: block !important;
+    min-height: auto !important;
+  }
+  
+  body {
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    min-height: 100vh !important;
+  }
+}

@@ -1,0 +1,554 @@
+/* AdminStudentDetail.module.css */
+
+.dashboardPage {
+  min-height: 100vh;
+  background-color: #f8fafc;
+  color: #1e293b;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+
+.pageContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+/* Header & Navigation */
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.simpleBack {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  color: #64748b;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.simpleBack:hover {
+  color: #2563eb;
+}
+
+.headerActions {
+  display: flex;
+  gap: 1rem;
+}
+
+.actionBtnPrimary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+  padding: 0.6rem 1.25rem;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.875rem;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+  transition: all 0.2s ease;
+}
+
+.actionBtnPrimary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+}
+
+.actionBtnDelete {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #fff;
+  color: #ef4444;
+  border: 1px solid #fee2e2;
+  padding: 0.6rem 1.25rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.actionBtnDelete:hover {
+  background: #fef2f2;
+  border-color: #ef4444;
+}
+
+/* Profile Hero */
+.profileHero {
+  background: white;
+  border-radius: 24px;
+  padding: 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 10px 40px -10px rgba(0,0,0,0.05);
+  margin-bottom: 2rem;
+  border: 1px solid #f1f5f9;
+}
+
+.heroLeft {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.heroAvatar {
+  width: 6rem;
+  height: 6rem;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: 800;
+  box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.3);
+}
+
+.heroInfo h1 {
+  font-size: 1.875rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+}
+
+.heroMeta {
+  display: flex;
+  gap: 1.5rem;
+  color: #64748b;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.heroMeta span {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.heroBadges {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.heroBadge {
+  background: #f1f5f9;
+  padding: 0.3rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.verified { background: #dcfce7; color: #15803d; }
+.unverified { background: #fff7ed; color: #c2410c; }
+
+.heroStats {
+  display: flex;
+  gap: 2rem;
+}
+
+.heroStatCard {
+  background: #f8fafc;
+  padding: 1.25rem;
+  border-radius: 16px;
+  min-width: 160px;
+  display: flex;
+  flex-direction: column;
+}
+
+.heroStatLabel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #94a3b8;
+  margin-bottom: 0.5rem;
+}
+
+.heroStatValue {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.miniProgress {
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 99px;
+  margin-top: 0.75rem;
+  overflow: hidden;
+}
+
+.miniFill {
+  height: 100%;
+  background: #3b82f6;
+  border-radius: 99px;
+}
+
+/* Tabs */
+.tabNav {
+  display: flex;
+  gap: 0.5rem;
+  background: #fff;
+  padding: 0.5rem;
+  border-radius: 14px;
+  width: fit-content;
+  margin-bottom: 2rem;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.tabBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 10px;
+  border: none;
+  background: none;
+  color: #64748b;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tabBtn:hover {
+  background: #f8fafc;
+  color: #1e293b;
+}
+
+.tabActive {
+  background: #f1f5f9;
+  color: #2563eb;
+}
+
+/* Info Items */
+.infoList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.infoItem {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.infoIcon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 10px;
+  background: #f1f5f9;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.blue { background: #eff6ff; color: #3b82f6; }
+
+.infoContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.infoLabel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.2rem;
+}
+
+.infoValue {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* Cards */
+.detailsGrid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 2rem;
+}
+
+.detailCard {
+  background: white;
+  border-radius: 24px;
+  padding: 2rem;
+  border: 1px solid #f1f5f9;
+}
+
+.detailCard h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 1.75rem;
+  color: #1e293b;
+}
+
+/* Fees Tab */
+.feeLayout {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.feeOverviewCard {
+  background: white;
+  border-radius: 24px;
+  padding: 2rem;
+  border: 1px solid #f1f5f9;
+}
+
+.feeOverviewCard h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+.mainProgressContainer {
+  margin-bottom: 2rem;
+}
+
+.progressText {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.fullProgressBar {
+  height: 12px;
+  background: #f1f5f9;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.fullProgressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #6366f1);
+  border-radius: 99px;
+}
+
+.feeStatsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.feeStatBox {
+  padding: 1.25rem;
+  background: #f8fafc;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.statLabel {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.statValue {
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.textGreen { color: #10b981; }
+.textRed { color: #ef4444; }
+.textBlue { color: #2563eb; }
+
+/* Table */
+.sleekTable {
+  background: white;
+  border-radius: 20px;
+  border: 1px solid #f1f5f9;
+  overflow: hidden;
+}
+
+.sleekTable table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.sleekTable th {
+  text-align: left;
+  padding: 1.25rem;
+  background: #f8fafc;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sleekTable td {
+  padding: 1.25rem;
+  border-top: 1px solid #f1f5f9;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
+
+.historyHeaderRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.historyHeaderRow h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+/* Scholarship */
+.scholarshipCard {
+  background: white;
+  border-radius: 24px;
+  padding: 2rem;
+  border: 1px solid #f1f5f9;
+}
+
+.schHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.schTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.schTitle h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.schStatus {
+  padding: 0.4rem 1rem;
+  border-radius: 99px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.statusNotApplied { background: #f1f5f9; color: #64748b; }
+.statusApproved { background: #dcfce7; color: #15803d; }
+.statusPending { background: #fff7ed; color: #c2410c; }
+
+.schGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+/* Status badge */
+.successBadge {
+  background: #dcfce7;
+  color: #15803d;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* Empty State */
+.emptyState {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: #f8fafc;
+  border-radius: 20px;
+  border: 2px dashed #e2e8f0;
+}
+
+.emptyState p {
+  margin-bottom: 1.5rem;
+  color: #64748b;
+}
+
+.sectionHeading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.sectionHeading h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+/* Loader */
+.loaderContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 1.5rem;
+}
+
+.loader {
+  width: 3rem;
+  height: 3rem;
+  border: 4px solid #e2e8f0;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Error State */
+.errorState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+  padding: 2rem;
+}
+
+.errorIcon { color: #ef4444; margin-bottom: 1.5rem; }
+.errorState h2 { margin-bottom: 1rem; }
+.errorState p { color: #64748b; margin-bottom: 2rem; }
+
+@media (max-width: 992px) {
+  .detailsGrid { grid-template-columns: 1fr; }
+  .feeStatsGrid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .profileHero { flex-direction: column; align-items: flex-start; gap: 2rem; }
+  .heroLeft { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .heroStats { width: 100%; flex-direction: column; }
+  .heroStatCard { min-width: 0; }
+  .schGrid { grid-template-columns: 1fr; }
+  .tabNav { overflow-x: auto; max-width: 100%; white-space: nowrap; }
+}

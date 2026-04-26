@@ -1,0 +1,103 @@
+/* Stepper.module.css - Elegant Stepper for Vibrant Background */
+
+.stepper {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ── Each step row ── */
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  position: relative;
+  padding-bottom: 0.5rem; 
+}
+
+/* ── Icon & Line Column ── */
+.lineCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  width: 36px;
+}
+
+/* Circle */
+.circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+  transition: all 0.3s ease;
+}
+
+.circlePending {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.circleActive {
+  background: #ffffff;
+  border: none;
+  color: #4f46e5;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.25);
+}
+
+.circleDone {
+  background: #2dd4bf;
+  border: none;
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Connector Line */
+.connector {
+  width: 2px;
+  min-height: 24px;
+  flex: 1;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 6px 0;
+}
+
+.connectorDone {
+  background: #2dd4bf;
+}
+
+/* ── Text Column ── */
+.textCol {
+  padding-top: 0.4rem;
+  padding-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.2;
+}
+
+.labelActive {
+  color: #ffffff;
+  font-size: 0.95rem;
+}
+
+.desc {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.descActive {
+  color: rgba(255, 255, 255, 0.9);
+}

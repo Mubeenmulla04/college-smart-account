@@ -1,4 +1,4 @@
-import Scholarship from '../../Database/Models/Scholarship.js';
+import Scholarship from '../models/Scholarship.js';
 
 export const getAllScholarships = async (req, res) => {
   try {

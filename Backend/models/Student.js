@@ -3,15 +3,24 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 const studentSchema = new mongoose.Schema({
-  studentId: { type: String, required: true, unique: true },
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  phone: String,
-  department: String,
-  year: Number,
-  address: String,
-  role: { type: String, default: 'student' },
-  password: { type: String, required: true },
+  studentId:    { type: String, required: true, unique: true },
+  name:         { type: String, required: true },
+  email:        { type: String, required: true, unique: true },
+  phone:        String,
+  dateOfBirth:  Date,
+  gender:       { type: String, enum: ['Male', 'Female', 'Other', 'Prefer not to say'] },
+  department:   String,
+  year:         Number,
+  rollNumber:   String,
+  admissionYear:Number,
+  category:     { type: String, enum: ['General', 'OBC', 'SC', 'ST', 'EWS', 'Other'] },
+  address:      String,
+  role:         { type: String, default: 'student' },
+  password:     { type: String, required: true },
+  isVerified:   { type: Boolean, default: false },
+  otp:          String,
+  otpExpires:   Date,
+  otpRetries:   { type: Number, default: 0 },
   fees: {
     total: { type: Number, default: 0 },
     paid: { type: Number, default: 0 },
@@ -30,7 +39,10 @@ const studentSchema = new mongoose.Schema({
     status: { type: String, default: 'Not Applied' },
     amount: { type: Number, default: 0 },
     applicationDate: Date,
-    documents: [String]
+    documents: [String],
+    mahadbtId: String,
+    schemeName: String,
+    mahadbtStatus: String
   }
 }, { timestamps: true });
 

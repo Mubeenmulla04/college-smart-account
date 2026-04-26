@@ -25,7 +25,7 @@ api.interceptors.request.use(
 
 // Students API
 export const studentsAPI = {
-  getAll: () => api.get('/students'),
+  getAll: (params) => api.get('/students', { params }),
   getProfile: () => api.get('/students/profile'),
   getById: (id) => api.get(`/students/${id}`),
   getByEmail: (email) => api.get(`/students?email=${email}`),
@@ -69,13 +69,19 @@ export const scholarshipsAPI = {
   create: (scholarship) => api.post('/scholarships', scholarship),
   update: (id, scholarship) => api.put(`/scholarships/${id}`, scholarship),
   delete: (id) => api.delete(`/scholarships/${id}`),
+  
+  // Application endpoints
+  apply: (applicationData) => api.post('/scholarships/apply', applicationData),
+  getMyApplications: () => api.get('/scholarships/my-applications'),
+  getAllApplications: () => api.get('/scholarships/admin/all-applications'),
+  reviewApplication: (id, reviewData) => api.put(`/scholarships/admin/review/${id}`, reviewData),
 };
 
 // Fee Receipts API
 export const feeReceiptsAPI = {
   getAll: () => api.get('/feeReceipts'),
   getById: (id) => api.get(`/feeReceipts/${id}`),
-  getByStudentId: (studentId) => api.get(`/feeReceipts?studentId=${studentId}`),
+  getByStudentId: (studentId) => api.get(`/feeReceipts/student/${studentId}`),
   create: (receipt) => api.post('/feeReceipts', receipt),
   update: (id, receipt) => api.put(`/feeReceipts/${id}`, receipt),
   delete: (id) => api.delete(`/feeReceipts/${id}`),
@@ -89,7 +95,34 @@ export const authAPI = {
       return response.data;
     } catch (error) {
       console.error('Login error:', error);
-      return { success: false, message: 'Login failed' };
+      return { success: false, message: error.response?.data?.message || 'Login failed' };
+    }
+  },
+  verifyOtp: async (email, otp, role) => {
+    try {
+      const response = await api.post('/auth/verify-otp', { email, otp, role });
+      return response.data;
+    } catch (error) {
+      console.error('OTP verification error:', error);
+      return { success: false, message: error.response?.data?.message || 'OTP verification failed' };
+    }
+  },
+  register: async (studentData) => {
+    try {
+      const response = await api.post('/auth/register', studentData);
+      return response.data;
+    } catch (error) {
+      console.error('Registration error:', error);
+      return { success: false, message: error.response?.data?.message || 'Registration failed' };
+    }
+  },
+  socialLogin: async (data) => {
+    try {
+      const response = await api.post('/auth/social-login', data);
+      return response.data;
+    } catch (error) {
+      console.error('Social login error:', error);
+      return { success: false, message: error.response?.data?.message || 'Social login failed' };
     }
   },
 };
@@ -98,35 +131,8 @@ export const authAPI = {
 export const dashboardAPI = {
   getAdminStats: async () => {
     try {
-      let students = [];
-      let receipts = [];
-
-      try {
-        const studentsRes = await api.get('/students');
-        students = studentsRes.data || [];
-      } catch (err) {
-        console.error('Students fetch failed:', err);
-      }
-
-      try {
-        const receiptsRes = await api.get('/feeReceipts');
-        receipts = receiptsRes.data || [];
-      } catch (err) {
-        console.error('Receipts fetch failed:', err);
-      }
-
-      const totalStudents = students.length;
-      const totalFees = students.reduce((sum, student) => sum + (student.fees?.total || 0), 0);
-      const pendingFees = students.reduce((sum, student) => sum + (student.fees?.pending || 0), 0);
-      const scholarshipApplications = students.filter(student => student.scholarship?.applied).length;
-
-      return {
-        totalStudents,
-        totalFees,
-        pendingFees,
-        scholarshipApplications,
-        recentStudents: students.slice(0, 5)
-      };
+      const response = await api.get('/dashboard/admin');
+      return response.data;
     } catch (error) {
       console.error('Error fetching admin stats:', error);
       return {

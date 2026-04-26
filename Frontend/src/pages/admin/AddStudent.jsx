@@ -2,6 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { validateEmail, validateName, validatePhone, validateStudentId, validateAmount } from '../../utils/validate';
 import { studentsAPI } from '../../services';
+import { Input, Button } from '../../components/auth';
+import { 
+  User, Mail, Phone, Building2, CalendarDays, 
+  MapPin, IndianRupee, Hash, ArrowLeft, 
+  PlusCircle, GraduationCap, Info
+} from 'lucide-react';
 import styles from '../admin/AddStudent.module.css';
 
 const AddStudent = () => {
@@ -22,14 +28,17 @@ const AddStudent = () => {
   const navigate = useNavigate();
 
   const departments = [
-    'Computer Science',
+    'Computer Science Engineering',
     'Electrical Engineering',
     'Mechanical Engineering',
     'Civil Engineering',
-    'Chemical Engineering',
+    'Biomedical Engineering',
+    'Electronics & Telecomm. Engg.',
     'Information Technology',
-    'Business Administration',
-    'Arts and Humanities'
+    'MCA',
+    'MTech Civil Engg. (WRE)',
+    'Diploma in Mechanical Engineering',
+    'Diploma in Electrical Engineering'
   ];
 
   const handleChange = (e) => {
@@ -45,21 +54,17 @@ const AddStudent = () => {
         [name]: ''
       }));
     }
-    // Clear success message when form changes
-    if (successMessage) {
-      setSuccessMessage('');
-    }
   };
 
   const validateForm = () => {
     const newErrors = {};
 
-    if (!validateStudentId(formData.studentId)) {
-      newErrors.studentId = 'Student ID must be 6-10 alphanumeric characters';
+    if (!formData.studentId.trim()) {
+      newErrors.studentId = 'PRN number is required';
     }
 
     if (!validateName(formData.name)) {
-      newErrors.name = 'Name must be 2-50 characters with only letters and spaces';
+      newErrors.name = 'Please enter a valid full name';
     }
 
     if (!validateEmail(formData.email)) {
@@ -67,23 +72,23 @@ const AddStudent = () => {
     }
 
     if (!validatePhone(formData.phone)) {
-      newErrors.phone = 'Please enter a valid phone number';
+      newErrors.phone = 'Please enter a valid 10-digit phone number';
     }
 
     if (!formData.department) {
       newErrors.department = 'Please select a department';
     }
 
-    if (!formData.year || formData.year < 1 || formData.year > 4) {
-      newErrors.year = 'Please select a valid year (1-4)';
+    if (!formData.year) {
+      newErrors.year = 'Please select the current year';
     }
 
     if (!validateAmount(formData.totalFees)) {
-      newErrors.totalFees = 'Please enter a valid amount';
+      newErrors.totalFees = 'Please enter a valid fee amount';
     }
 
     if (!formData.address.trim()) {
-      newErrors.address = 'Please enter an address';
+      newErrors.address = 'Please enter the student\'s address';
     }
 
     setErrors(newErrors);
@@ -93,36 +98,22 @@ const AddStudent = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setIsLoading(true);
-    setErrors({}); // Clear previous errors
+    setErrors({});
 
     try {
-      // Check if student ID already exists
-      const existingStudents = await studentsAPI.getAll();
-      const studentExists = existingStudents.data.find(
-        student => student.id === formData.studentId || student.email === formData.email
-      );
-
-      if (studentExists) {
-        setErrors({ 
-          general: 'A student with this ID or email already exists. Please use a different ID or email.' 
-        });
-        return;
-      }
-
-      // Prepare student data with proper structure
       const newStudent = {
-        id: formData.studentId,
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
+        studentId: formData.studentId.trim(),
+        rollNumber: formData.studentId.trim(),
+        name: formData.name.trim(),
+        email: formData.email.trim().toLowerCase(),
+        phone: formData.phone.trim(),
         department: formData.department,
         year: parseInt(formData.year),
-        address: formData.address,
+        address: formData.address.trim(),
+        password: 'password123',
         fees: {
           total: parseFloat(formData.totalFees),
           paid: 0,
@@ -140,21 +131,16 @@ const AddStudent = () => {
         }
       };
 
-      // Send to API to store in database
       const response = await studentsAPI.create(newStudent);
       
       if (response.status === 201) {
-        setSuccessMessage('Student added successfully! Redirecting to dashboard...');
-        setTimeout(() => {
-          navigate('/admin/dashboard');
-        }, 2000);
-      } else {
-        throw new Error('Failed to create student');
+        setSuccessMessage('Student registered successfully! Redirecting...');
+        setTimeout(() => navigate('/admin/students'), 2000);
       }
     } catch (error) {
       console.error('Error adding student:', error);
       setErrors({ 
-        general: 'Failed to add student. Please check your connection and try again.' 
+        general: error.response?.data?.error || 'Failed to register student. PRN or Email might already exist.' 
       });
     } finally {
       setIsLoading(false);
@@ -164,203 +150,115 @@ const AddStudent = () => {
   return (
     <div className={styles.addStudentContainer}>
       <div className={styles.addStudentContent}>
+        
+        {/* Back Navigation */}
+        <button onClick={() => navigate(-1)} className={styles.backLink}>
+          <ArrowLeft size={16} /> Back
+        </button>
+
+        {/* Header Section */}
         <div className={styles.addStudentHeader}>
-          <div>
-            <h1 className={styles.addStudentTitle}>Add New Student</h1>
-            <p className={styles.addStudentSubtitle}>Register a new student in the system</p>
+          <div className={styles.headerInfo}>
+            <div className={styles.headerIconContainer}>
+              <PlusCircle size={28} className={styles.iconGradient} />
+            </div>
+            <div>
+              <h1 className={styles.addStudentTitle}>Add New Student</h1>
+              <p className={styles.addStudentSubtitle}>Register a student and initialize their account</p>
+            </div>
           </div>
-          <button
-            onClick={() => navigate('/admin/dashboard')}
-            className={styles.backButton}
-          >
-            Back to Dashboard
-          </button>
         </div>
 
+        {/* Form Section */}
         <div className={styles.formContainer}>
-          <div className={styles.formContent}>
-            {successMessage && (
-              <div className={styles.successMessage}>
-                {successMessage}
-              </div>
-            )}
+          {successMessage && <div className={styles.successBanner}>{successMessage}</div>}
+          {errors.general && <div className={styles.errorBanner}>{errors.general}</div>}
 
-            <form onSubmit={handleSubmit} className={styles.form}>
-              <div className={styles.formGrid}>
-                <div className={styles.formGroup}>
-                  <label htmlFor="studentId" className={styles.formLabel}>
-                    Student ID *
-                  </label>
-                  <input
-                    type="text"
-                    id="studentId"
-                    name="studentId"
-                    value={formData.studentId}
-                    onChange={handleChange}
-                    className={`${styles.formInput} ${errors.studentId ? styles.formInputError : ''}`}
-                    placeholder="Enter student ID"
-                  />
-                  {errors.studentId && (
-                    <p className={styles.errorMessage}>{errors.studentId}</p>
-                  )}
-                </div>
+          <form onSubmit={handleSubmit} className={styles.form}>
+            
+            <div className={styles.sectionHeader}>
+              <User size={18} />
+              <h3>Personal Information</h3>
+            </div>
+            
+            <div className={styles.formGrid}>
+              <Input 
+                label="Full Name" name="name" value={formData.name}
+                icon={User} onChange={handleChange}
+                placeholder="Enter student's full name" error={errors.name}
+              />
+              <Input 
+                label="Email Address" name="email" type="email" value={formData.email}
+                icon={Mail} onChange={handleChange}
+                placeholder="student@college.edu" error={errors.email}
+              />
+              <Input 
+                label="Phone Number" name="phone" type="tel" value={formData.phone}
+                icon={Phone} onChange={handleChange}
+                placeholder="10-digit mobile number" error={errors.phone}
+              />
+              <Input 
+                label="PRN (Student ID)" name="studentId" value={formData.studentId}
+                icon={Hash} onChange={handleChange}
+                placeholder="Enter PRN number" error={errors.studentId}
+              />
+            </div>
 
-                <div className={styles.formGroup}>
-                  <label htmlFor="name" className={styles.formLabel}>
-                    Full Name *
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className={`${styles.formInput} ${errors.name ? styles.formInputError : ''}`}
-                    placeholder="Enter full name"
-                  />
-                  {errors.name && (
-                    <p className={styles.errorMessage}>{errors.name}</p>
-                  )}
-                </div>
+            <div className={styles.sectionHeader}>
+              <GraduationCap size={18} />
+              <h3>Academic & Fee Details</h3>
+            </div>
 
-                <div className={styles.formGroup}>
-                  <label htmlFor="email" className={styles.formLabel}>
-                    Email Address *
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className={`${styles.formInput} ${errors.email ? styles.formInputError : ''}`}
-                    placeholder="Enter email address"
-                  />
-                  {errors.email && (
-                    <p className={styles.errorMessage}>{errors.email}</p>
-                  )}
-                </div>
+            <div className={styles.formGrid}>
+              <Input 
+                label="Department" name="department" type="select" value={formData.department}
+                icon={Building2} onChange={handleChange}
+                options={departments} placeholder="Select Department" error={errors.department}
+              />
+              <Input 
+                label="Current Year" name="year" type="select" value={formData.year}
+                icon={CalendarDays} onChange={handleChange}
+                options={[
+                  { label: '1st Year', value: '1' },
+                  { label: '2nd Year', value: '2' },
+                  { label: '3rd Year', value: '3' },
+                  { label: '4th Year', value: '4' }
+                ]}
+                placeholder="Select Year" error={errors.year}
+              />
+              <Input 
+                label="Total Fees (₹)" name="totalFees" type="number" value={formData.totalFees}
+                icon={IndianRupee} onChange={handleChange}
+                placeholder="e.g. 75000" error={errors.totalFees}
+              />
+              <Input 
+                label="Permanent Address" name="address" type="textarea" value={formData.address}
+                icon={MapPin} onChange={handleChange}
+                placeholder="Full residential address" error={errors.address}
+                rows={2}
+              />
+            </div>
 
-                <div className={styles.formGroup}>
-                  <label htmlFor="phone" className={styles.formLabel}>
-                    Phone Number *
-                  </label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className={`${styles.formInput} ${errors.phone ? styles.formInputError : ''}`}
-                    placeholder="Enter phone number"
-                  />
-                  {errors.phone && (
-                    <p className={styles.errorMessage}>{errors.phone}</p>
-                  )}
-                </div>
+            <div className={styles.infoNote}>
+              <Info size={16} />
+              <p>New students are assigned <b>"password123"</b> as their default password.</p>
+            </div>
 
-                <div className={styles.formGroup}>
-                  <label htmlFor="department" className={styles.formLabel}>
-                    Department *
-                  </label>
-                  <select
-                    id="department"
-                    name="department"
-                    value={formData.department}
-                    onChange={handleChange}
-                    className={`${styles.formSelect} ${errors.department ? styles.formInputError : ''}`}
-                  >
-                    <option value="">Select Department</option>
-                    {departments.map(dept => (
-                      <option key={dept} value={dept}>{dept}</option>
-                    ))}
-                  </select>
-                  {errors.department && (
-                    <p className={styles.errorMessage}>{errors.department}</p>
-                  )}
-                </div>
-
-                <div className={styles.formGroup}>
-                  <label htmlFor="year" className={styles.formLabel}>
-                    Year *
-                  </label>
-                  <select
-                    id="year"
-                    name="year"
-                    value={formData.year}
-                    onChange={handleChange}
-                    className={`${styles.formSelect} ${errors.year ? styles.formInputError : ''}`}
-                  >
-                    <option value="">Select Year</option>
-                    <option value="1">1st Year</option>
-                    <option value="2">2nd Year</option>
-                    <option value="3">3rd Year</option>
-                    <option value="4">4th Year</option>
-                  </select>
-                  {errors.year && (
-                    <p className={styles.errorMessage}>{errors.year}</p>
-                  )}
-                </div>
-
-                <div className={styles.formGroup}>
-                  <label htmlFor="totalFees" className={styles.formLabel}>
-                    Total Fees (₹) *
-                  </label>
-                  <input
-                    type="number"
-                    id="totalFees"
-                    name="totalFees"
-                    value={formData.totalFees}
-                    onChange={handleChange}
-                    className={`${styles.formInput} ${errors.totalFees ? styles.formInputError : ''}`}
-                    placeholder="Enter total fees"
-                  />
-                  {errors.totalFees && (
-                    <p className={styles.errorMessage}>{errors.totalFees}</p>
-                  )}
-                </div>
-              </div>
-
-              <div className={styles.formGroup}>
-                <label htmlFor="address" className={styles.formLabel}>
-                  Address *
-                </label>
-                <textarea
-                  id="address"
-                  name="address"
-                  rows={3}
-                  value={formData.address}
-                  onChange={handleChange}
-                  className={`${styles.formTextarea} ${errors.address ? styles.formInputError : ''}`}
-                  placeholder="Enter complete address"
-                />
-                {errors.address && (
-                  <p className={styles.errorMessage}>{errors.address}</p>
-                )}
-              </div>
-
-              {errors.general && (
-                <p className={styles.generalError}>{errors.general}</p>
-              )}
-
-              <div className={styles.formActions}>
-                <button
-                  type="button"
-                  onClick={() => navigate('/admin/dashboard')}
-                  className={styles.cancelButton}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className={styles.submitButton}
-                >
-                  {isLoading ? 'Adding Student...' : 'Add Student'}
-                </button>
-              </div>
-            </form>
-          </div>
+            <div className={styles.formActions}>
+              <Button 
+                type="button" variant="secondary" 
+                onClick={() => navigate('/admin/students')}
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="submit" variant="primary" 
+                loading={isLoading} loadingText="Registering..."
+              >
+                Register Student
+              </Button>
+            </div>
+          </form>
         </div>
       </div>
     </div>

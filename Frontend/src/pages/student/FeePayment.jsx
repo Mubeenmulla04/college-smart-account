@@ -28,7 +28,10 @@ const FeePayment = () => {
         
         // Fetch receipt data after getting student data to use the correct student ID
         if (data?.id) {
-          const data2 = await dashboardAPI.getFeesReceiptByStudentId(data.id);
+          // Prefer the custom studentId field (e.g. STU1234), fall back to MongoDB _id
+          const studentId = data.studentId || data.id;
+          console.log("Fetching receipts for studentId:", studentId, "from student data:", data);
+          const data2 = await dashboardAPI.getFeesReceiptByStudentId(studentId);
           setReceiptData(data2);
           
           // Set suggested amount to pending fees
@@ -102,12 +105,14 @@ const FeePayment = () => {
 
     try {
       const amount = parseFloat(paymentData.amount);
-      const receiptNumber = `RCP${Date.now()}`;
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      const rand = (n) => Array.from({ length: n }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+      const receiptNumber = `RCP-${rand(4)}-${rand(3)}`; // e.g. RCP-K7X2-3A9
       const paymentDate = new Date().toISOString().split('T')[0];
 
       // Create fee receipt
       const receiptData2 = {
-        studentId: studentData.student_id || studentData.id,
+        studentId: studentData.studentId || studentData.id,  // Use custom STUxxxx ID, fallback to _id
         studentName: studentData.name,
         amount: amount, // Store just the current payment amount
         date: paymentDate, // Backend expects 'date', not 'paymentDate'
@@ -121,7 +126,7 @@ const FeePayment = () => {
       console.log('Creating receipt with data:', receiptData2);
       
       // Validate student ID before creating receipt
-      const studentIdToUse = studentData.student_id || studentData.id;
+      const studentIdToUse = studentData.studentId || studentData.id;
       if (!studentIdToUse) {
         console.error('Cannot create receipt - no valid student ID found');
         setErrors({ general: 'Unable to create receipt - student ID not found. Please contact support.' });
@@ -170,6 +175,7 @@ const FeePayment = () => {
 
 
       setPaymentSuccess(true);
+      window.scrollTo(0, 0); // Scroll to top to show success message
       
       // Update local state
       setStudentData(prev => ({
