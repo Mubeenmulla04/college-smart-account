@@ -60,6 +60,9 @@ const scholarshipApplicationSchema = new mongoose.Schema({
     previousMarksheet: String,
     rationCard: String
   },
+  studentName: String,
+  studentRollNo: String,
+  department: String,
   estimatedAmount: {
     type: Number,
     default: 0

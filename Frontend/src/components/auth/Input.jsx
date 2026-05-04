@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Eye, EyeOff, ChevronDown } from 'lucide-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import styles from './Input.module.css';
 
 // ── Strength helpers ──────────────────────────────────────────────────────────
 const calcStrength = (pwd) => {
@@ -16,14 +15,14 @@ const calcStrength = (pwd) => {
 
 const STRENGTH_META = [
   null,
-  { label: 'Weak',   color: '#ef4444' },
-  { label: 'Fair',   color: '#f59e0b' },
-  { label: 'Good',   color: '#3b82f6' },
-  { label: 'Strong', color: '#22c55e' },
+  { label: 'Weak',   colorClass: 'bg-red-500', textClass: 'text-red-500' },
+  { label: 'Fair',   colorClass: 'bg-amber-500', textClass: 'text-amber-500' },
+  { label: 'Good',   colorClass: 'bg-blue-500', textClass: 'text-blue-500' },
+  { label: 'Strong', colorClass: 'bg-emerald-500', textClass: 'text-emerald-500' },
 ];
 
 /**
- * Input — multi-variant form field for auth pages.
+ * Input — multi-variant form field using Tailwind CSS.
  */
 const Input = ({
   label,
@@ -51,18 +50,27 @@ const Input = ({
   const inputId = id || name;
   const isError = Boolean(error);
 
-  const baseClass = `${styles.input} ${Icon ? styles.inputHasIcon : ''} ${isError ? styles.inputError : ''}`;
+  const baseInputClass = `w-full bg-gray-50 border transition-all duration-200 outline-none text-gray-900 placeholder-gray-400 focus:bg-white
+    ${Icon ? 'pl-11 pr-4' : 'px-4'}
+    ${type === 'textarea' ? 'py-3 rounded-2xl resize-y min-h-[80px]' : 'h-11 rounded-xl'}
+    ${isError 
+      ? 'border-red-300 focus:border-red-500 focus:ring-4 focus:ring-red-100 bg-red-50/30' 
+      : 'border-gray-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 hover:border-gray-300'
+    }
+  `;
+
+  const iconContainerClass = `absolute left-0 top-0 h-11 w-11 flex items-center justify-center pointer-events-none text-gray-400 ${isError ? 'text-red-400' : ''} ${type === 'textarea' ? 'items-start pt-3' : ''}`;
 
   const renderCore = () => {
     if (type === 'select') {
       return (
-        <div className={styles.inputWrap}>
-          {Icon && <div className={styles.leftIcon}><Icon size={18} strokeWidth={1.5} /></div>}
+        <div className="relative">
+          {Icon && <div className={iconContainerClass}><Icon size={18} strokeWidth={2} /></div>}
           <select
             id={inputId} name={name} value={value}
-            onChange={onChange} className={baseClass} {...rest}
+            onChange={onChange} className={`${baseInputClass} appearance-none pr-10 cursor-pointer`} {...rest}
           >
-            <option value="">{placeholder || 'Select…'}</option>
+            <option value="" disabled hidden>{placeholder || 'Select…'}</option>
             {options?.map(o => {
               const val = typeof o === 'object' ? o.value : o;
               const lbl = typeof o === 'object' ? o.label : o;
@@ -78,8 +86,8 @@ const Input = ({
               </optgroup>
             ))}
           </select>
-          <div className={styles.selectIcon}>
-            <ChevronDown size={18} strokeWidth={1.5} />
+          <div className="absolute right-0 top-0 h-11 w-11 flex items-center justify-center pointer-events-none text-gray-400">
+            <ChevronDown size={18} strokeWidth={2} />
           </div>
         </div>
       );
@@ -87,12 +95,12 @@ const Input = ({
 
     if (type === 'textarea') {
       return (
-        <div className={styles.inputWrap}>
-          {Icon && <div className={styles.leftIcon} style={{ top: '0.8rem', alignItems: 'flex-start' }}><Icon size={18} strokeWidth={1.5} /></div>}
+        <div className="relative">
+          {Icon && <div className={iconContainerClass}><Icon size={18} strokeWidth={2} /></div>}
           <textarea
             id={inputId} name={name} value={value} rows={rows}
             onChange={onChange} placeholder={placeholder}
-            className={baseClass} {...rest}
+            className={baseInputClass} {...rest}
           />
         </div>
       );
@@ -104,36 +112,38 @@ const Input = ({
 
       return (
         <>
-          <div className={styles.inputWrap}>
-            {Icon && <div className={styles.leftIcon}><Icon size={18} strokeWidth={1.5} /></div>}
+          <div className="relative">
+            {Icon && <div className={iconContainerClass}><Icon size={18} strokeWidth={2} /></div>}
             <input
               id={inputId} name={name}
               type={showPwd ? 'text' : 'password'}
               value={value} onChange={onChange}
               placeholder={placeholder}
-              className={baseClass}
+              className={`${baseInputClass} pr-11`}
               autoFocus={autoFocus}
               {...rest}
             />
             <button
               type="button"
-              className={styles.eyeBtn}
+              className="absolute right-0 top-0 h-11 w-11 flex items-center justify-center text-gray-400 hover:text-indigo-600 transition-colors focus:outline-none"
               onClick={() => setShowPwd(v => !v)}
               aria-label={showPwd ? 'Hide password' : 'Show password'}
               tabIndex={-1}
             >
-              {showPwd ? <EyeOff size={18} strokeWidth={1.5} /> : <Eye size={18} strokeWidth={1.5} />}
+              {showPwd ? <EyeOff size={18} strokeWidth={2} /> : <Eye size={18} strokeWidth={2} />}
             </button>
           </div>
           {showStrength && value && meta && (
-            <div className={styles.strengthRow}>
-              <div className={styles.strengthTrack}>
-                <div
-                  className={styles.strengthFill}
-                  style={{ width: `${strength * 25}%`, background: meta.color }}
-                />
+            <div className="flex items-center gap-3 mt-2 animate-in fade-in slide-in-from-top-1">
+              <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden flex gap-0.5">
+                {[1, 2, 3, 4].map(level => (
+                  <div 
+                    key={level} 
+                    className={`h-full flex-1 transition-all duration-300 ${level <= strength ? meta.colorClass : 'bg-transparent'}`}
+                  />
+                ))}
               </div>
-              <span className={styles.strengthTxt} style={{ color: meta.color }}>
+              <span className={`text-xs font-bold uppercase tracking-wider ${meta.textClass}`}>
                 {meta.label}
               </span>
             </div>
@@ -148,9 +158,9 @@ const Input = ({
       const maxDate = max ? new Date(max) : null;
       
       return (
-        <div className={styles.inputWrap}>
-          {Icon && <div className={styles.leftIcon}><Icon size={18} strokeWidth={1.5} /></div>}
-          <div className={styles.datePickerWrapper}>
+        <div className="relative">
+          {Icon && <div className={iconContainerClass}><Icon size={18} strokeWidth={2} /></div>}
+          <div className="w-full">
             <DatePicker
               selected={selectedDate}
               onChange={(date) => {
@@ -167,7 +177,7 @@ const Input = ({
               }}
               maxDate={maxDate}
               placeholderText={placeholder}
-              className={baseClass}
+              className={`${baseInputClass} w-full`}
               id={inputId}
               name={name}
               dateFormat="yyyy-MM-dd"
@@ -175,6 +185,7 @@ const Input = ({
               showMonthDropdown
               showYearDropdown
               dropdownMode="select"
+              wrapperClassName="w-full"
             />
           </div>
         </div>
@@ -185,17 +196,17 @@ const Input = ({
 
     if (phonePrefix) {
       return (
-        <div className={`${styles.phoneWrap} ${isError ? styles.inputError : ''}`}>
-          <span className={styles.phonePrefix}>
-            {Icon && <Icon size={18} strokeWidth={1.5} />}
+        <div className="relative flex">
+          <div className={`flex items-center justify-center px-4 bg-gray-100 border border-r-0 border-gray-200 rounded-l-xl text-gray-500 font-medium ${isError ? 'border-red-300 bg-red-50 text-red-500' : ''}`}>
+            {Icon && <Icon size={16} strokeWidth={2} className="mr-1.5" />}
             {phonePrefix}
-          </span>
+          </div>
           <input
             id={inputId} name={name} type={type}
             value={value} onChange={onChange}
             placeholder={placeholder}
             maxLength={maxLength} max={max}
-            className={`${baseClass} ${styles.phoneInput}`}
+            className={`${baseInputClass} rounded-l-none pl-4 border-l-0 focus:border-l`}
             autoFocus={autoFocus}
             {...rest}
           />
@@ -204,14 +215,14 @@ const Input = ({
     }
 
     return (
-      <div className={styles.inputWrap}>
-        {Icon && <div className={styles.leftIcon}><Icon size={18} strokeWidth={1.5} /></div>}
+      <div className="relative">
+        {Icon && <div className={iconContainerClass}><Icon size={18} strokeWidth={2} /></div>}
         <input
           id={inputId} name={name} type={type}
           value={value} onChange={onChange}
           placeholder={placeholder}
           maxLength={maxLength} max={max}
-          className={baseClass}
+          className={baseInputClass}
           autoFocus={autoFocus}
           {...rest}
         />
@@ -220,11 +231,11 @@ const Input = ({
   };
 
   return (
-    <div className={`${styles.field} ${full ? styles.fieldFull : ''}`}>
-      {label && <label htmlFor={inputId} className={styles.label}>{label}</label>}
+    <div className={`flex flex-col ${full ? 'w-full' : ''}`}>
+      {label && <label htmlFor={inputId} className="block text-sm font-semibold text-gray-700 mb-1.5">{label}</label>}
       {renderCore()}
-      {error && <p className={styles.error}>{error}</p>}
-      {!error && hint && <p className={styles.hint}>{hint}</p>}
+      {error && <p className="mt-1.5 text-sm text-red-500 font-medium animate-in fade-in">{error}</p>}
+      {!error && hint && <p className="mt-1.5 text-xs text-gray-500">{hint}</p>}
     </div>
   );
 };

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { dashboardAPI } from '../../services';
-import styles from '../../styles/Dashboard.module.css';
+import { IndianRupee, CreditCard, Clock, GraduationCap, Download, ArrowRight, User, Mail, Phone, BookOpen, AlertCircle, FileText, CheckCircle2 } from 'lucide-react';
 
 const StudentDashboard = () => {
   const { user } = useAuth();
@@ -10,60 +10,45 @@ const StudentDashboard = () => {
   const location = useLocation();
   const [studentData, setStudentData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     const fetchStudentData = async () => {
       try {
         setLoading(true);
-
         const data = await dashboardAPI.getStudentStats();
         setStudentData(data);
-        console.log("Fetched student data:", data);
       } catch (error) {
         console.error('Error fetching student data:', error);
       } finally {
         setLoading(false);
       }
     };
-
     if (user?.email) {
       fetchStudentData();
     }
   }, [user]);
 
-  // Fetch fee receipt when student data is available
   useEffect(() => {
     const fetchFeesReceipt = async () => {
       if (studentData?.id) {
-        console.log("Fetching fees receipt for student:", studentData.id);
         try {
-          const receipt = await dashboardAPI.getFeesReceiptByStudentId(studentData.id);
-          console.log("Fetched fees receipt:", receipt);
+          await dashboardAPI.getFeesReceiptByStudentId(studentData.id);
         } catch (error) {
           console.error('Error fetching fees receipt:', error);
         }
       }
     };
-
     fetchFeesReceipt();
-  }, [studentData?.id]);  // Only run when studentData.id changes, not the entire object
+  }, [studentData?.id]);
 
-  // Add effect to refresh data when component becomes visible (user returns from other pages)
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (!document.hidden && user?.email) {
-        // Refresh data when page becomes visible
         const fetchFreshData = async () => {
           try {
-  
             const data = await dashboardAPI.getStudentStats();
             setStudentData(data);
-                
-            // Also refresh fee receipt data
-            if (data?.id) {
-              await dashboardAPI.getFeesReceiptByStudentId(data.id);
-            }
+            if (data?.id) await dashboardAPI.getFeesReceiptByStudentId(data.id);
           } catch (error) {
             console.error('Error refreshing student data:', error);
           }
@@ -71,24 +56,17 @@ const StudentDashboard = () => {
         fetchFreshData();
       }
     };
-  
     document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, [user]);
 
-  // Refresh data when location changes (user navigates back from other pages)
   useEffect(() => {
     if (user?.email && location.pathname === '/student/dashboard') {
       const refreshData = async () => {
         try {
-
           const data = await dashboardAPI.getStudentStats();
           setStudentData(data);
-          
-          // Also refresh fee receipt data
-          if (data?.id) {
-            await dashboardAPI.getFeesReceiptByStudentId(data.id);
-          }
+          if (data?.id) await dashboardAPI.getFeesReceiptByStudentId(data.id);
         } catch (error) {
           console.error('Error refreshing student data on navigation:', error);
         }
@@ -97,35 +75,12 @@ const StudentDashboard = () => {
     }
   }, [location.pathname, user]);
 
-  // Manual refresh function
-  const _handleRefresh = async () => {
-    if (refreshing || !user?.email) return;
-    
-    try {
-      setRefreshing(true);
-
-      const data = await dashboardAPI.getStudentStats();
-      setStudentData(data);
-      
-      // Also refresh fee receipt data
-      if (data?.id) {
-        await dashboardAPI.getFeesReceiptByStudentId(data.id);
-      }
-    } catch (error) {
-      console.error('Error refreshing student data:', error);
-    } finally {
-      setRefreshing(false);
-    }
-  };
-
   if (loading) {
     return (
-      <div className={styles.dashboardContainer}>
-        <div className={styles.dashboardContent}>
-          <div style={{ textAlign: 'center', padding: '4rem 0' }}>
-            <div className={styles.loadingSpinner}></div>
-            <p style={{ marginTop: '1rem', color: '#64748b' }}>Loading student data...</p>
-          </div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center pt-16">
+        <div className="flex flex-col items-center">
+          <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+          <p className="mt-4 text-gray-500 font-medium">Loading your dashboard...</p>
         </div>
       </div>
     );
@@ -133,347 +88,292 @@ const StudentDashboard = () => {
 
   if (!studentData) {
     return (
-      <div className={styles.dashboardContainer}>
-        <div className={styles.dashboardContent}>
-          <div className={styles.emptyState}>
-            <p>Student data not found.</p>
-          </div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center pt-16">
+        <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center">
+          <AlertCircle size={48} className="text-red-400 mb-4" />
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Data Unavailable</h2>
+          <p className="text-gray-500">We couldn't load your student data.</p>
         </div>
       </div>
     );
   }
 
   const paymentProgress = (studentData.fees.paid / studentData.fees.total) * 100;
-  // studentData.fees.pending - feesReciept?.amount
 
   return (
-    <div className={styles.dashboardContainer}>
-      <div className={styles.dashboardContent}>
-        {/* Header */}
-        <div className={styles.dashboardHeader}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-              <div className={styles.studentAvatar} style={{ width: '4rem', height: '4rem', fontSize: '1.5rem' }}>
-                {studentData.name.split(' ').map(n => n[0]).join('')}
+    <div className="w-full py-6 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        
+        {/* Header Section */}
+        <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-50 to-teal-50 rounded-full blur-3xl -mr-32 -mt-32 opacity-70 pointer-events-none"></div>
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex items-center gap-5">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-blue-200">
+                {studentData.name.charAt(0).toUpperCase()}
               </div>
               <div>
-                <h1 className={styles.dashboardTitle}>Welcome back, {studentData.name}!</h1>
-                <p className={styles.dashboardSubtitle}>{studentData.department} • {studentData.year}rd Year</p>
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">Welcome back, {studentData.name.split(' ')[0]}!</h1>
+                <p className="text-gray-500 mt-1 flex items-center gap-2">
+                  <BookOpen size={16} /> {studentData.department} • Year {studentData.year}
+                </p>
               </div>
             </div>
-            {/* <button
-              onClick={handleRefresh}
-              disabled={refreshing}
-              className={styles.actionButton}
-              style={{ 
-                padding: '0.5rem 1rem', 
-                fontSize: '0.875rem',
-                opacity: refreshing ? 0.6 : 1,
-                cursor: refreshing ? 'not-allowed' : 'pointer'
-              }}
-            >
-              <svg 
-                style={{ 
-                  width: '1rem', 
-                  height: '1rem', 
-                  marginRight: '0.5rem',
-                  animation: refreshing ? 'spin 1s linear infinite' : 'none'
-                }} 
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
+            {studentData.fees.pending > 0 && (
+              <button 
+                onClick={() => navigate('/student/fee-payment')}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-all shadow-md shadow-blue-200 flex items-center justify-center gap-2 w-full md:w-auto"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-              {refreshing ? 'Refreshing...' : 'Refresh'}
-            </button> */}
+                Pay Pending Fees <ArrowRight size={18} />
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className={styles.statsGrid}>
-          <div className={styles.statCard}>
-            <div className={styles.statCardContent}>
-              <div className={styles.statCardHeader}>
-                <div className={`${styles.statIcon} ${styles.statIconGreen}`}>
-                  <svg className={styles.statIconWhite} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                  </svg>
-                </div>
-                <div className={styles.statInfo}>
-                  <div className={styles.statLabel}>Total Fees</div>
-                  <div className={styles.statValue}>₹{studentData.fees.total.toLocaleString()}</div>
-                </div>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 relative overflow-hidden group hover:shadow-md transition-shadow">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-150"></div>
+            <div className="flex items-start justify-between relative z-10">
+              <div>
+                <p className="text-sm font-semibold text-gray-500 mb-1">Total Fees</p>
+                <h3 className="text-2xl font-bold text-gray-900">₹{studentData.fees.total.toLocaleString()}</h3>
+              </div>
+              <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
+                <IndianRupee size={24} strokeWidth={2} />
               </div>
             </div>
           </div>
 
-          <div className={styles.statCard}>
-            <div className={styles.statCardContent}>
-              <div className={styles.statCardHeader}>
-                <div className={`${styles.statIcon} ${styles.statIconBlue}`}>
-                  <svg className={styles.statIconWhite} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div className={styles.statInfo}>
-                  <div className={styles.statLabel}>Amount Paid</div>
-                  <div className={styles.statValue}>₹{studentData.fees.paid.toLocaleString()}</div>
-                </div>
+          <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 relative overflow-hidden group hover:shadow-md transition-shadow">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-150"></div>
+            <div className="flex items-start justify-between relative z-10">
+              <div>
+                <p className="text-sm font-semibold text-gray-500 mb-1">Amount Paid</p>
+                <h3 className="text-xl sm:text-2xl font-heading font-bold tracking-tight text-gray-900">₹{studentData.fees.paid.toLocaleString()}</h3>
+              </div>
+              <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+                <CreditCard size={24} strokeWidth={2} />
               </div>
             </div>
           </div>
 
-          <div className={styles.statCard}>
-            <div className={styles.statCardContent}>
-              <div className={styles.statCardHeader}>
-                <div className={`${styles.statIcon} ${styles.statIconYellow}`}>
-                  <svg className={styles.statIconWhite} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div className={styles.statInfo}>
-                  <div className={styles.statLabel}>Pending Amount</div>
-                  <div className={styles.statValue}>₹{studentData.fees.pending.toLocaleString()}</div>
-                </div>
+          <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 relative overflow-hidden group hover:shadow-md transition-shadow">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-amber-50 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-150"></div>
+            <div className="flex items-start justify-between relative z-10">
+              <div>
+                <p className="text-sm font-semibold text-gray-500 mb-1">Pending Amount</p>
+                <h3 className="text-xl sm:text-2xl font-heading font-bold tracking-tight text-gray-900">₹{studentData.fees.pending.toLocaleString()}</h3>
+              </div>
+              <div className="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600">
+                <Clock size={24} strokeWidth={2} />
               </div>
             </div>
           </div>
 
-          <div className={styles.statCard}>
-            <div className={styles.statCardContent}>
-              <div className={styles.statCardHeader}>
-                <div className={`${styles.statIcon} ${styles.statIconPurple}`}>
-                  <svg className={styles.statIconWhite} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
+          <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 relative overflow-hidden group hover:shadow-md transition-shadow">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-purple-50 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-150"></div>
+            <div className="flex items-start justify-between relative z-10">
+              <div>
+                <p className="text-sm font-semibold text-gray-500 mb-2">Scholarship</p>
+                <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
+                  studentData.scholarship.status === 'Approved' ? 'bg-emerald-100 text-emerald-700' :
+                  studentData.scholarship.status === 'Under Review' ? 'bg-amber-100 text-amber-700' :
+                  studentData.scholarship.status === 'Not Applied' ? 'bg-gray-100 text-gray-600' : 'bg-red-100 text-red-700'
+                }`}>
+                  {studentData.scholarship.status}
+                </span>
+              </div>
+              <div className="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600">
+                <GraduationCap size={24} strokeWidth={2} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Middle Section: Fee Progress & Quick Actions */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          {/* Fee Progress */}
+          <div className="lg:col-span-2 bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+            <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2"><CreditCard size={20} className="text-blue-600"/> Fee Progress</h2>
+            
+            <div className="mb-8">
+              <div className="flex justify-between text-sm font-medium mb-2">
+                <span className="text-gray-500">Overall Payment</span>
+                <span className="text-blue-600">{paymentProgress.toFixed(1)}%</span>
+              </div>
+              <div className="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
+                <div 
+                  className="bg-gradient-to-r from-blue-500 to-indigo-600 h-full rounded-full transition-all duration-1000 ease-out" 
+                  style={{ width: `${paymentProgress}%` }}
+                ></div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="p-5 rounded-2xl bg-emerald-50/50 border border-emerald-100 flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-emerald-800 mb-1">Total Paid</p>
+                  <p className="text-xl sm:text-2xl font-heading font-bold tracking-tight text-emerald-600">₹{studentData.fees.paid.toLocaleString()}</p>
                 </div>
-                <div className={styles.statInfo}>
-                  <div className={styles.statLabel}>Scholarship Status</div>
-                  <div className={styles.statValue} style={{ fontSize: '1rem' }}>
-                    <span className={`${styles.statusBadge} ${
-                      studentData.scholarship.status === 'Under Review' ? styles.pending :
-                      studentData.scholarship.status === 'Approved' ? styles.paid : styles.pending
-                    }`}>
-                      {studentData.scholarship.status}
-                    </span>
+                <div className="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center"><CheckCircle2 size={20}/></div>
+              </div>
+              <div className="p-5 rounded-2xl bg-amber-50/50 border border-amber-100 flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-amber-800 mb-1">Remaining Due</p>
+                  <p className="text-xl sm:text-2xl font-heading font-bold tracking-tight text-amber-600">₹{studentData.fees.pending.toLocaleString()}</p>
+                </div>
+                <div className="w-10 h-10 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center"><Clock size={20}/></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Actions */}
+          <div className="bg-gradient-to-b from-slate-900 to-slate-800 rounded-3xl p-8 shadow-lg text-white">
+            <h2 className="text-lg font-bold mb-6 flex items-center gap-2">Quick Actions</h2>
+            <div className="space-y-4">
+              <button 
+                onClick={() => navigate('/student/fee-payment')}
+                disabled={studentData.fees.pending === 0}
+                className={`w-full p-4 rounded-2xl flex items-center justify-between transition-all ${
+                  studentData.fees.pending === 0 
+                  ? 'bg-slate-800/50 text-slate-500 cursor-not-allowed border border-slate-700/50' 
+                  : 'bg-white/10 hover:bg-white/20 border border-white/10 group'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`p-2 rounded-xl ${studentData.fees.pending === 0 ? 'bg-slate-800' : 'bg-blue-500/20 text-blue-400'}`}>
+                    <CreditCard size={20} />
                   </div>
+                  <span className="font-medium">{studentData.fees.pending === 0 ? 'No Dues Pending' : 'Pay Fees Online'}</span>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
+                {studentData.fees.pending > 0 && <ArrowRight size={18} className="text-white/50 group-hover:text-white transition-colors" />}
+              </button>
 
-        {/* Fee Progress Section */}
-        <div style={{ marginBottom: '2rem' }}>
-          <h2 className={styles.sectionTitle}>Fee Payment Progress</h2>
-          <div className={styles.statCard}>
-            <div className={styles.statCardContent}>
-              <div style={{ marginBottom: '1.5rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.875rem', color: '#64748b' }}>
-                  <span>Payment Progress</span>
-                  <span>{paymentProgress.toFixed(1)}%</span>
-                </div>
-                <div style={{ width: '100%', height: '8px', backgroundColor: '#e2e8f0', borderRadius: '4px', overflow: 'hidden' }}>
-                  <div 
-                    style={{ 
-                      height: '100%', 
-                      backgroundColor: '#3b82f6', 
-                      borderRadius: '4px',
-                      width: `${paymentProgress}%`,
-                      transition: 'width 0.3s ease'
-                    }}
-                  ></div>
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-                <div style={{ padding: '1rem', backgroundColor: '#f0fdf4', borderRadius: '8px', border: '1px solid #bbf7d0' }}>
-                  <p style={{ color: '#166534', fontWeight: '600', marginBottom: '0.25rem' }}>Paid</p>
-                  <p style={{ color: '#15803d', fontSize: '1.125rem', fontWeight: '700' }}>₹{studentData.fees.paid.toLocaleString()}</p>
-                </div>
-                <div style={{ padding: '1rem', backgroundColor: '#fffbeb', borderRadius: '8px', border: '1px solid #fed7aa' }}>
-                  <p style={{ color: '#92400e', fontWeight: '600', marginBottom: '0.25rem' }}>Pending</p>
-                  <p style={{ color: '#d97706', fontSize: '1.125rem', fontWeight: '700' }}>₹{studentData.fees.pending.toLocaleString()}</p>
-                </div>
-                {studentData.fees.lastPayment && (
-                  <div style={{ padding: '1rem', backgroundColor: '#eff6ff', borderRadius: '8px', border: '1px solid #bfdbfe' }}>
-                    <p style={{ color: '#1e40af', fontWeight: '600', marginBottom: '0.25rem' }}>Last Payment</p>
-                    <p style={{ color: '#2563eb', fontSize: '0.875rem' }}>{studentData.fees.lastPayment}</p>
+              <button 
+                onClick={() => navigate('/student/receipt')}
+                className="w-full p-4 rounded-2xl flex items-center justify-between bg-white/10 hover:bg-white/20 border border-white/10 transition-all group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-xl bg-teal-500/20 text-teal-400">
+                    <Download size={20} />
                   </div>
-                )}
-              </div>
+                  <span className="font-medium">Download Receipts</span>
+                </div>
+                <ArrowRight size={18} className="text-white/50 group-hover:text-white transition-colors" />
+              </button>
+
+              <button 
+                onClick={() => navigate('/student/scholarship')}
+                className="w-full p-4 rounded-2xl flex items-center justify-between bg-white/10 hover:bg-white/20 border border-white/10 transition-all group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-xl bg-purple-500/20 text-purple-400">
+                    <GraduationCap size={20} />
+                  </div>
+                  <span className="font-medium">
+                    {studentData.scholarship.status === 'Not Applied' ? 'Apply for Scholarship' : 'Scholarship Details'}
+                  </span>
+                </div>
+                <ArrowRight size={18} className="text-white/50 group-hover:text-white transition-colors" />
+              </button>
             </div>
           </div>
         </div>
 
-        {/* Quick Actions */}
-        <div className={styles.quickActions}>
-          <h2 className={styles.sectionTitle}>Quick Actions</h2>
-          <div className={styles.actionButtons}>
-            <button 
-              className={styles.actionButton}
-              onClick={() => navigate('/student/fee-payment')}
-              disabled={studentData?.fees?.pending === 0}
-              style={{ 
-                opacity: studentData?.fees?.pending === 0 ? 0.5 : 1,
-                cursor: studentData?.fees?.pending === 0 ? 'not-allowed' : 'pointer'
-              }}
-            >
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-              </svg>
-              {studentData?.fees?.pending === 0 ? 'No Pending Fees' : 'Pay Fees Online'}
-            </button>
-
-            <button 
-              className={styles.actionButton}
-              onClick={() => navigate('/student/receipt')}
-            >
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              Download Fee Receipt
-            </button>
-
-            <button 
-              className={styles.actionButton}
-              onClick={() => navigate('/student/scholarship')}
-              disabled={studentData?.scholarship?.status === 'Under Review'}
-              style={{ 
-                opacity: studentData?.scholarship?.status === 'Under Review' ? 0.5 : 1,
-                cursor: studentData?.scholarship?.status === 'Under Review' ? 'not-allowed' : 'pointer'
-              }}
-            >
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-              </svg>
-              {studentData?.scholarship?.status === 'Under Review' ? 'Application Under Review' : 
-               studentData?.scholarship?.status === 'Not Applied' ? 'Apply for Scholarship' : 'View Scholarship'}
-            </button>
-          </div>
-        </div>
-
-        {/* Payment History */}
-        {studentData.fees.paymentHistory && studentData.fees.paymentHistory.length > 0 && (
-          <div style={{ marginBottom: '2rem' }}>
-            <h2 className={styles.sectionTitle}>Payment History</h2>
-            <div className={styles.statCard}>
-              <div className={styles.statCardContent}>
-                <div style={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    <thead>
-                      <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-                        <th style={{ padding: '0.75rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                          Date
-                        </th>
-                        <th style={{ padding: '0.75rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                          Amount
-                        </th>
-                        <th style={{ padding: '0.75rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                          Payment Method
-                        </th>
-                        <th style={{ padding: '0.75rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                          Receipt No.
-                        </th>
-                        <th style={{ padding: '0.75rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                          Status
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {studentData.fees.paymentHistory.map((payment, index) => (
-                        <tr key={payment.id || index} style={{ borderBottom: '1px solid #e2e8f0' }}>
-                          <td style={{ padding: '1rem 0.75rem', fontSize: '0.875rem', color: '#1e293b' }}>
-                            {payment.date}
-                          </td>
-                          <td style={{ padding: '1rem 0.75rem', fontSize: '0.875rem', color: '#1e293b', fontWeight: '600' }}>
-                            ₹{payment.amount.toLocaleString()}
-                          </td>
-                          <td style={{ padding: '1rem 0.75rem', fontSize: '0.875rem', color: '#1e293b' }}>
+        {/* Bottom Section: History & Info */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          {/* Payment History */}
+          <div className="lg:col-span-2 bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2"><FileText size={20} className="text-blue-600"/> Recent Payments</h2>
+            </div>
+            
+            {studentData.fees.paymentHistory && studentData.fees.paymentHistory.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-gray-100">
+                      <th className="pb-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Date</th>
+                      <th className="pb-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Amount</th>
+                      <th className="pb-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Method</th>
+                      <th className="pb-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-50">
+                    {studentData.fees.paymentHistory.slice(0, 5).map((payment, idx) => (
+                      <tr key={payment.id || idx} className="hover:bg-gray-50/50 transition-colors">
+                        <td className="py-4 text-sm text-gray-600">{payment.date}</td>
+                        <td className="py-4 text-sm font-bold text-gray-900">₹{payment.amount.toLocaleString()}</td>
+                        <td className="py-4 text-sm text-gray-600">
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-gray-100 text-gray-600 text-xs font-medium">
                             {payment.method}
-                          </td>
-                          <td style={{ padding: '1rem 0.75rem', fontSize: '0.875rem', color: '#1e293b' }}>
-                            {payment.receiptNumber}
-                          </td>
-                          <td style={{ padding: '1rem 0.75rem' }}>
-                            <span className={`${styles.statusBadge} ${styles.paid}`}>
-                              Completed
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                          </span>
+                        </td>
+                        <td className="py-4">
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-100">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                            Success
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <FileText size={24} className="text-gray-400" />
+                </div>
+                <p className="text-gray-500 text-sm">No payment history found.</p>
+              </div>
+            )}
+          </div>
+
+          {/* Student Profile Overview */}
+          <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+            <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2"><User size={20} className="text-blue-600"/> Profile Summary</h2>
+            
+            <div className="space-y-5">
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-gray-50 rounded-lg text-gray-400 mt-0.5"><User size={16} /></div>
+                <div>
+                  <p className="text-xs font-medium text-gray-400 uppercase">Student ID</p>
+                  <p className="font-semibold text-gray-900">{studentData.id}</p>
                 </div>
               </div>
-            </div>
-          </div>
-        )}
-
-        {/* Student Information */}
-        <div style={{ marginBottom: '2rem' }}>
-          <h2 className={styles.sectionTitle}>Student Information</h2>
-          <div className={styles.statCard}>
-            <div className={styles.statCardContent}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  <div>
-                    <p style={{ fontSize: '0.875rem', fontWeight: '600', color: '#64748b', marginBottom: '0.25rem' }}>Student ID</p>
-                    <p style={{ fontSize: '0.875rem', color: '#1e293b' }}>{studentData.id}</p>
-                  </div>
-                  <div>
-                    <p style={{ fontSize: '0.875rem', fontWeight: '600', color: '#64748b', marginBottom: '0.25rem' }}>Name</p>
-                    <p style={{ fontSize: '0.875rem', color: '#1e293b' }}>{studentData.name}</p>
-                  </div>
-                  <div>
-                    <p style={{ fontSize: '0.875rem', fontWeight: '600', color: '#64748b', marginBottom: '0.25rem' }}>Email</p>
-                    <p style={{ fontSize: '0.875rem', color: '#1e293b' }}>{studentData.email}</p>
-                  </div>
-                  <div>
-                    <p style={{ fontSize: '0.875rem', fontWeight: '600', color: '#64748b', marginBottom: '0.25rem' }}>Phone</p>
-                    <p style={{ fontSize: '0.875rem', color: '#1e293b' }}>{studentData.phone}</p>
-                  </div>
-                  {studentData.address && (
-                    <div>
-                      <p style={{ fontSize: '0.875rem', fontWeight: '600', color: '#64748b', marginBottom: '0.25rem' }}>Address</p>
-                      <p style={{ fontSize: '0.875rem', color: '#1e293b' }}>{studentData.address}</p>
-                    </div>
-                  )}
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-gray-50 rounded-lg text-gray-400 mt-0.5"><Mail size={16} /></div>
+                <div>
+                  <p className="text-xs font-medium text-gray-400 uppercase">Email</p>
+                  <p className="font-medium text-gray-700">{studentData.email}</p>
                 </div>
-                
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  <div>
-                    <p style={{ fontSize: '0.875rem', fontWeight: '600', color: '#64748b', marginBottom: '0.25rem' }}>Department</p>
-                    <p style={{ fontSize: '0.875rem', color: '#1e293b' }}>{studentData.department}</p>
-                  </div>
-                  <div>
-                    <p style={{ fontSize: '0.875rem', fontWeight: '600', color: '#64748b', marginBottom: '0.25rem' }}>Year</p>
-                    <p style={{ fontSize: '0.875rem', color: '#1e293b' }}>{studentData.year}rd Year</p>
-                  </div>
-                  <div>
-                    <p style={{ fontSize: '0.875rem', fontWeight: '600', color: '#64748b', marginBottom: '0.5rem' }}>Scholarship Status</p>
-                    <span className={`${styles.statusBadge} ${
-                      studentData.scholarship.status === 'Under Review' ? styles.pending :
-                      studentData.scholarship.status === 'Approved' ? styles.paid : styles.pending
-                    }`}>
-                      {studentData.scholarship.status}
-                    </span>
-                  </div>
-                  {studentData.scholarship.amount > 0 && (
-                    <div>
-                      <p style={{ fontSize: '0.875rem', fontWeight: '600', color: '#64748b', marginBottom: '0.25rem' }}>Scholarship Amount</p>
-                      <p style={{ fontSize: '0.875rem', color: '#1e293b', fontWeight: '600' }}>₹{studentData.scholarship.amount.toLocaleString()}</p>
-                    </div>
-                  )}
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-gray-50 rounded-lg text-gray-400 mt-0.5"><Phone size={16} /></div>
+                <div>
+                  <p className="text-xs font-medium text-gray-400 uppercase">Phone</p>
+                  <p className="font-medium text-gray-700">{studentData.phone}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-gray-50 rounded-lg text-gray-400 mt-0.5"><BookOpen size={16} /></div>
+                <div>
+                  <p className="text-xs font-medium text-gray-400 uppercase">Course</p>
+                  <p className="font-medium text-gray-700">{studentData.department}</p>
+                  <p className="text-sm text-gray-500">Year {studentData.year}</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
       </div>
     </div>
   );
 };
 
-export default StudentDashboard; 
+export default StudentDashboard;

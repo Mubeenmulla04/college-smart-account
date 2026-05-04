@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { dashboardAPI, feeReceiptsAPI } from '../../services';
-import styles from '../../styles/Dashboard.module.css';
+import { 
+  FileText, Download, ArrowLeft, Loader2, 
+  Eye, Calendar, CreditCard, SearchX, ShieldCheck, CheckCircle2 
+} from 'lucide-react';
 
 const Receipt = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [studentData, setStudentData] = useState(null);
   const [receipts, setReceipts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,7 +34,6 @@ const Receipt = () => {
         if (data?.id) {
           const studentId = data.studentId || data.id;
 
-          // --- Source 1: FeeReceipt collection ---
           let dbReceipts = [];
           try {
             const receiptData = await feeReceiptsAPI.getByStudentId(studentId);
@@ -49,8 +53,6 @@ const Receipt = () => {
             console.error('Error fetching FeeReceipt records:', err);
           }
 
-          // --- Source 2: paymentHistory inside student profile ---
-          // These exist for payments made before the receipt system was fixed
           const historyReceipts = (data?.fees?.paymentHistory || []).map(p => ({
             receiptNumber: p.receiptNumber || p.receiptId || p.id,
             paymentDate: p.date || p.paymentDate,
@@ -61,14 +63,12 @@ const Receipt = () => {
             _source: 'history'
           }));
 
-          // --- Merge & deduplicate by receiptNumber ---
           const dbReceiptNums = new Set(dbReceipts.map(r => r.receiptNumber));
           const onlyHistory = historyReceipts.filter(
             r => r.receiptNumber && !dbReceiptNums.has(r.receiptNumber)
           );
           const merged = [...dbReceipts, ...onlyHistory];
 
-          // Sort by date descending
           merged.sort((a, b) => {
             const da = new Date(a.paymentDate || a.createdAt || 0);
             const db2 = new Date(b.paymentDate || b.createdAt || 0);
@@ -91,7 +91,6 @@ const Receipt = () => {
 
 
   const generateReceiptPDF = (receipt) => {
-    // Create a new window for the receipt
     const receiptWindow = window.open('', '_blank');
     
     const receiptHTML = `
@@ -109,14 +108,14 @@ const Receipt = () => {
           }
           .header {
             text-align: center;
-            border-bottom: 2px solid #333;
+            border-bottom: 2px solid #1e3a8a;
             padding-bottom: 20px;
             margin-bottom: 30px;
           }
           .college-name {
             font-size: 24px;
             font-weight: bold;
-            color: #333;
+            color: #1e3a8a;
             margin-bottom: 5px;
           }
           .college-address {
@@ -128,7 +127,7 @@ const Receipt = () => {
             font-weight: bold;
             text-align: center;
             margin: 20px 0;
-            color: #333;
+            color: #111827;
           }
           .receipt-info {
             display: grid;
@@ -137,15 +136,16 @@ const Receipt = () => {
             margin-bottom: 30px;
           }
           .info-section {
-            background: #f8f9fa;
+            background: #f8fafc;
             padding: 15px;
             border-radius: 5px;
+            border: 1px solid #e2e8f0;
           }
           .info-title {
             font-weight: bold;
-            color: #333;
+            color: #1e3a8a;
             margin-bottom: 10px;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #cbd5e1;
             padding-bottom: 5px;
           }
           .info-row {
@@ -154,15 +154,15 @@ const Receipt = () => {
             margin-bottom: 8px;
           }
           .info-label {
-            color: #666;
+            color: #475569;
           }
           .info-value {
             font-weight: bold;
-            color: #333;
+            color: #0f172a;
           }
           .amount-section {
-            background: #e8f5e8;
-            border: 2px solid #4caf50;
+            background: #f0fdf4;
+            border: 2px solid #22c55e;
             border-radius: 8px;
             padding: 20px;
             text-align: center;
@@ -170,20 +170,21 @@ const Receipt = () => {
           }
           .amount-label {
             font-size: 16px;
-            color: #333;
+            color: #166534;
             margin-bottom: 10px;
+            font-weight: bold;
           }
           .amount-value {
             font-size: 32px;
             font-weight: bold;
-            color: #2e7d32;
+            color: #15803d;
           }
           .footer {
             margin-top: 40px;
             padding-top: 20px;
-            border-top: 1px solid #ddd;
+            border-top: 1px solid #e2e8f0;
             text-align: center;
-            color: #666;
+            color: #64748b;
             font-size: 12px;
           }
           .signature-section {
@@ -196,7 +197,7 @@ const Receipt = () => {
             width: 200px;
           }
           .signature-line {
-            border-top: 1px solid #333;
+            border-top: 1px solid #334155;
             margin-top: 40px;
             padding-top: 5px;
           }
@@ -210,7 +211,7 @@ const Receipt = () => {
         <div class="header">
           <div class="college-name">Smart College Management System</div>
           <div class="college-address">
-            BaratRatna indira gandhi college of engineering Solapur, Maharashtra - 413003<br>
+            Barat Ratna Indira Gandhi College of Engineering, Solapur, Maharashtra - 413255<br>
             Phone: +91 93707 34943 | Email: info@smartcollege.edu
           </div>
         </div>
@@ -246,7 +247,7 @@ const Receipt = () => {
             </div>
             <div class="info-row">
               <span class="info-label">Payment Date:</span>
-              <span class="info-value">${receipt.paymentDate || 'N/A'}</span>
+              <span class="info-value">${formatDate(receipt.paymentDate)}</span>
             </div>
             <div class="info-row">
               <span class="info-label">Payment Method:</span>
@@ -275,13 +276,12 @@ const Receipt = () => {
 
         <div class="footer">
           <p>This is a computer-generated receipt and does not require a physical signature.</p>
-          <p>For any queries, please contact the accounts department.</p>
           <p>Generated on: ${new Date().toLocaleString()}</p>
         </div>
 
         <div class="no-print" style="text-align: center; margin-top: 30px;">
-          <button onclick="window.print()" style="background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-right: 10px;">Print Receipt</button>
-          <button onclick="window.close()" style="background: #6b7280; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Close</button>
+          <button onclick="window.print()" style="background: #2563eb; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-right: 10px; font-weight: bold;">Print Receipt</button>
+          <button onclick="window.close()" style="background: #64748b; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">Close</button>
         </div>
       </body>
       </html>
@@ -293,108 +293,109 @@ const Receipt = () => {
 
   if (loading) {
     return (
-      <div className={styles.dashboardContainer}>
-        <div className={styles.dashboardContent}>
-          <div style={{ textAlign: 'center', padding: '4rem 0' }}>
-            <div className={styles.loadingSpinner}></div>
-            <p style={{ marginTop: '1rem', color: '#64748b' }}>Loading receipts...</p>
-          </div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center pt-16">
+        <div className="flex flex-col items-center">
+          <Loader2 size={40} className="text-blue-600 animate-spin mb-4" />
+          <p className="text-gray-500 font-medium">Loading receipts...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={styles.dashboardContainer}>
-      <div className={styles.dashboardContent}>
-        <div className={styles.dashboardHeader}>
-          <h1 className={styles.dashboardTitle}>Fee Receipts</h1>
-          <p className={styles.dashboardSubtitle}>Download and view your fee payment receipts</p>
+    <div className="w-full py-6 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        
+        {/* Back */}
+        <button onClick={() => navigate(-1)} className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors group">
+          <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" /> Back to Dashboard
+        </button>
+
+        {/* Hero Header */}
+        <div className="relative bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl p-6 sm:p-8 text-white overflow-hidden shadow-lg shadow-blue-200/50">
+          <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 80% 20%, white 1px, transparent 0)', backgroundSize: '30px 30px' }} />
+          <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center shadow-sm">
+                <FileText size={28} />
+              </div>
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-black tracking-tight">Fee Receipts</h1>
+                <p className="text-blue-100 text-sm mt-0.5">View, download, and manage your payment history</p>
+              </div>
+            </div>
+            <div className="text-left sm:text-right">
+              <p className="text-blue-200 text-xs uppercase tracking-widest mb-1">Total Payments</p>
+              <p className="text-3xl font-black">{receipts.length}</p>
+            </div>
+          </div>
         </div>
 
         {!receipts || receipts.length === 0 ? (
-          <div className={styles.emptyState}>
-            <div style={{ textAlign: 'center', padding: '3rem' }}>
-              <svg style={{ width: '4rem', height: '4rem', color: '#9ca3af', margin: '0 auto 1rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              <h3 style={{ fontSize: '1.125rem', fontWeight: '600', color: '#374151', marginBottom: '0.5rem' }}>
-                No Receipts Found
-              </h3>
-              <p style={{ color: '#6b7280' }}>
-                You haven't made any fee payments yet. Make a payment to generate receipts.
-              </p>
-              <button 
-                onClick={() => window.location.href = '/student/fee-payment'}
-                className={styles.actionButton}
-                style={{ marginTop: '1rem' }}
-              >
-                Make Payment
-              </button>
+          <div className="bg-white rounded-3xl p-16 shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
+            <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6 text-gray-300">
+              <SearchX size={48} />
             </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">No Receipts Found</h3>
+            <p className="text-gray-500 mb-8 max-w-sm">You haven't made any fee payments yet. Make a payment to generate receipts.</p>
+            <button 
+              onClick={() => navigate('/student/fee-payment')}
+              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-all shadow-md shadow-blue-200"
+            >
+              Make a Payment
+            </button>
           </div>
         ) : (
-          <div style={{ display: 'grid', gap: '1.5rem' }}>
-            {Array.isArray(receipts) && receipts.map((receipt) => (
-              <div key={receipt.id || receipt.receiptNumber} className={styles.statCard}>
-                <div className={styles.statCardContent}>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', alignItems: 'center' }}>
+          <div className="space-y-4">
+            {receipts.map((receipt) => (
+              <div key={receipt.id || receipt.receiptNumber} className="bg-white rounded-3xl p-5 sm:p-6 shadow-sm border border-gray-100 hover:shadow-md hover:border-blue-100 transition-all group relative overflow-hidden flex flex-col sm:flex-row gap-6 justify-between sm:items-center">
+                <div className="absolute top-0 left-0 w-1.5 h-full bg-blue-600 rounded-l-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                
+                <div className="flex items-start sm:items-center gap-4 sm:gap-6 flex-1">
+                  <div className="w-12 h-12 rounded-2xl bg-blue-50 flex-shrink-0 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                    <FileText size={24} />
+                  </div>
+                  
+                  <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 w-full">
                     <div>
-                      <h3 style={{ fontSize: '1rem', fontWeight: '600', color: '#1e293b', marginBottom: '0.25rem' }}>
-                        {receipt.description || 'Fee Payment'}
-                      </h3>
-                      <p style={{ color: '#94a3b8', fontSize: '0.75rem', fontFamily: 'monospace', letterSpacing: '0.05em' }}>
-                        #{receipt.receiptNumber}
-                      </p>
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Description</p>
+                      <h3 className="font-bold text-gray-900">{receipt.description || 'Fee Payment'}</h3>
+                      <p className="text-xs text-blue-600 font-medium mt-0.5">#{receipt.receiptNumber}</p>
                     </div>
-                    
                     <div>
-                      <p style={{ fontSize: '0.875rem', color: '#64748b', marginBottom: '0.25rem' }}>Payment Date</p>
-                      <p style={{ fontWeight: '600', color: '#1e293b' }}>{formatDate(receipt.paymentDate)}</p>
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Date</p>
+                      <div className="flex items-center gap-1.5 text-gray-900 font-semibold text-sm">
+                        <Calendar size={14} className="text-gray-400" />
+                        {formatDate(receipt.paymentDate)}
+                      </div>
                     </div>
-                    
                     <div>
-                      <p style={{ fontSize: '0.875rem', color: '#64748b', marginBottom: '0.25rem' }}>Payment Method</p>
-                      <p style={{ fontWeight: '600', color: '#1e293b' }}>{receipt.paymentMethod}</p>
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Method</p>
+                      <div className="flex items-center gap-1.5 text-gray-900 font-semibold text-sm">
+                        <CreditCard size={14} className="text-gray-400" />
+                        <span className="capitalize">{receipt.paymentMethod}</span>
+                      </div>
                     </div>
-                    
                     <div>
-                      <p style={{ fontSize: '0.875rem', color: '#64748b', marginBottom: '0.25rem' }}>Amount</p>
-                      <p style={{ fontSize: '1.25rem', fontWeight: '700', color: '#16a34a' }}>
-                        ₹{(receipt.amount || 0).toLocaleString()}
-                      </p>
-                    </div>
-                    
-                    <div>
-                      <span className={`${styles.statusBadge} ${styles.paid}`}>
-                        {receipt.status}
-                      </span>
-                    </div>
-                    
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
-                      <button
-                        onClick={() => generateReceiptPDF(receipt)}
-                        className={`${styles.actionButton} ${styles.primaryButton}`}
-                        style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
-                      >
-                        <svg style={{ width: '1rem', height: '1rem', marginRight: '0.5rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        Download
-                      </button>
-                      <button
-                        onClick={() => setSelectedReceipt(receipt)}
-                        className={styles.actionButton}
-                        style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
-                      >
-                        <svg style={{ width: '1rem', height: '1rem', marginRight: '0.5rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
-                        View
-                      </button>
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Amount</p>
+                      <p className="text-lg font-heading font-bold tracking-tight text-gray-900">₹{(receipt.amount || 0).toLocaleString()}</p>
                     </div>
                   </div>
+                </div>
+
+                <div className="flex items-center gap-3 pt-4 sm:pt-0 w-full sm:w-auto mt-4 sm:mt-0">
+                  <button
+                    onClick={() => setSelectedReceipt(receipt)}
+                    className="flex-1 sm:flex-none px-4 py-2.5 bg-gray-50 hover:bg-gray-100 text-gray-700 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
+                  >
+                    <Eye size={16} /> View
+                  </button>
+                  <button
+                    onClick={() => generateReceiptPDF(receipt)}
+                    className="flex-1 sm:flex-none px-4 py-2.5 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
+                  >
+                    <Download size={16} /> Save
+                  </button>
                 </div>
               </div>
             ))}
@@ -403,93 +404,77 @@ const Receipt = () => {
 
         {/* Receipt Preview Modal */}
         {selectedReceipt && (
-          <div style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-            padding: '1rem'
-          }}>
-            <div style={{
-              backgroundColor: 'white',
-              borderRadius: '8px',
-              padding: '2rem',
-              maxWidth: '600px',
-              width: '100%',
-              maxHeight: '80vh',
-              overflowY: 'auto'
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1e293b' }}>
-                  Receipt Preview
-                </h3>
+          <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+            <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200 relative border border-gray-100">
+              
+              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 to-indigo-500"></div>
+              
+              <div className="px-8 pt-8 pb-4 flex items-start justify-between">
+                <div>
+                  <h3 className="text-2xl font-black text-gray-900 tracking-tight">Receipt</h3>
+                  <p className="text-emerald-600 text-sm mt-1 flex items-center gap-1.5 font-medium"><ShieldCheck size={16}/> Verified Payment</p>
+                </div>
                 <button
                   onClick={() => setSelectedReceipt(null)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    fontSize: '1.5rem',
-                    cursor: 'pointer',
-                    color: '#6b7280'
-                  }}
+                  className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 transition-colors"
                 >
                   ×
                 </button>
               </div>
               
-              <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', padding: '1.5rem' }}>
-                <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-                  <h4 style={{ fontSize: '1.125rem', fontWeight: '600', color: '#1e293b' }}>
-                    Smart College Management System
-                  </h4>
-                  <p style={{ color: '#64748b', fontSize: '0.875rem' }}>Fee Payment Receipt</p>
-                </div>
-                
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
-                  <div>
-                    <p style={{ fontSize: '0.875rem', color: '#64748b', marginBottom: '0.25rem' }}>Receipt Number</p>
-                    <p style={{ fontWeight: '600', color: '#1e293b' }}>{selectedReceipt.receiptNumber}</p>
+              <div className="px-8 py-2 overflow-y-auto">
+                <div className="bg-gray-50 border border-gray-200/60 rounded-2xl p-6 relative overflow-hidden">
+                  
+                  {/* Perforated edge effect */}
+                  <div className="absolute -left-2 -right-2 top-0 flex justify-between space-x-1 opacity-20">
+                    {Array.from({length: 40}).map((_, i) => <div key={i} className="w-1.5 h-1.5 rounded-full bg-gray-500"></div>)}
                   </div>
-                  <div>
-                    <p style={{ fontSize: '0.875rem', color: '#64748b', marginBottom: '0.25rem' }}>Payment Date</p>
-                    <p style={{ fontWeight: '600', color: '#1e293b' }}>{selectedReceipt.paymentDate}</p>
+                  
+                  <div className="flex justify-between items-end mb-6 mt-4">
+                    <div>
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Amount Paid</p>
+                      <p className="text-3xl font-heading font-bold tracking-tight text-gray-900">₹{(selectedReceipt.amount || 0).toLocaleString()}</p>
+                    </div>
+                    <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center shadow-sm">
+                      <CheckCircle2 size={24} className="text-emerald-600" />
+                    </div>
                   </div>
-                  <div>
-                    <p style={{ fontSize: '0.875rem', color: '#64748b', marginBottom: '0.25rem' }}>Student Name</p>
-                    <p style={{ fontWeight: '600', color: '#1e293b' }}>{studentData?.name}</p>
+                  
+                  <div className="space-y-4 text-sm pt-2">
+                    <div className="flex justify-between items-center py-3 border-b border-gray-200/60 border-dashed">
+                      <span className="text-gray-500 font-medium">Receipt No</span>
+                      <span className="font-bold text-gray-900">#{selectedReceipt.receiptNumber}</span>
+                    </div>
+                    <div className="flex justify-between items-center py-3 border-b border-gray-200/60 border-dashed">
+                      <span className="text-gray-500 font-medium">Date</span>
+                      <span className="font-bold text-gray-900">{formatDate(selectedReceipt.paymentDate)}</span>
+                    </div>
+                    <div className="flex justify-between items-center py-3 border-b border-gray-200/60 border-dashed">
+                      <span className="text-gray-500 font-medium">Payment Method</span>
+                      <span className="font-bold text-gray-900 capitalize">{selectedReceipt.paymentMethod}</span>
+                    </div>
+                    <div className="flex justify-between items-center py-3 border-b border-gray-200/60 border-dashed">
+                      <span className="text-gray-500 font-medium">Student Name</span>
+                      <span className="font-bold text-gray-900">{studentData?.name}</span>
+                    </div>
+                    <div className="flex justify-between items-center py-3 border-b border-gray-200/60 border-dashed">
+                      <span className="text-gray-500 font-medium">Student ID</span>
+                      <span className="font-bold text-gray-900">{studentData?.id}</span>
+                    </div>
+                    <div className="flex justify-between items-center py-3">
+                      <span className="text-gray-500 font-medium">Description</span>
+                      <span className="font-bold text-gray-900 text-right max-w-[150px] truncate">{selectedReceipt.description || 'Fee Payment'}</span>
+                    </div>
                   </div>
-                  <div>
-                    <p style={{ fontSize: '0.875rem', color: '#64748b', marginBottom: '0.25rem' }}>Student ID</p>
-                    <p style={{ fontWeight: '600', color: '#1e293b' }}>{studentData?.id}</p>
-                  </div>
-                </div>
-                
-                <div style={{ textAlign: 'center', padding: '1rem', backgroundColor: '#f0fdf4', borderRadius: '8px', border: '1px solid #bbf7d0' }}>
-                  <p style={{ fontSize: '0.875rem', color: '#166534', marginBottom: '0.5rem' }}>Amount Paid</p>
-                  <p style={{ fontSize: '2rem', fontWeight: '700', color: '#15803d' }}>
-                    ₹{selectedReceipt.amount.toLocaleString()}
-                  </p>
                 </div>
               </div>
               
-              <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem', justifyContent: 'center' }}>
+              <div className="px-8 py-6 bg-white flex gap-3">
                 <button
                   onClick={() => generateReceiptPDF(selectedReceipt)}
-                  className={`${styles.actionButton} ${styles.primaryButton}`}
+                  className="flex-1 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-colors shadow-lg shadow-blue-200 flex items-center justify-center gap-2"
                 >
-                  Download PDF
-                </button>
-                <button
-                  onClick={() => setSelectedReceipt(null)}
-                  className={`${styles.actionButton} ${styles.dangerButton}`}
-                >
-                  Close
+                  <Download size={18} /> Download PDF
                 </button>
               </div>
             </div>

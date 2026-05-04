@@ -2,13 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { studentsAPI } from '../../services';
 import html2pdf from 'html2pdf.js';
-import { Input, Button } from '../../components/auth';
 import { 
   Printer, Download, ArrowLeft, Search, 
   FileText, User, CreditCard, History,
-  CheckCircle, Loader2, Sparkles, GraduationCap
+  CheckCircle, Loader2, Sparkles, GraduationCap, Info, AlertCircle
 } from 'lucide-react';
-import styles from './FeeReceipt.module.css';
 
 const FeeReceipt = () => {
   const [students, setStudents] = useState([]);
@@ -66,10 +64,34 @@ const FeeReceipt = () => {
   ).slice(0, 5);
 
   const printReceipt = () => {
-    const originalTitle = document.title;
-    document.title = `Fee_Receipt_${receiptData.name.replace(/\s+/g, '_')}`;
-    window.print();
-    document.title = originalTitle;
+    const element = document.getElementById('receipt-content');
+    const opt = {
+      margin: 10,
+      filename: `Receipt_${receiptData.studentId || 'N_A'}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { 
+        scale: 3, 
+        useCORS: true,
+        letterRendering: true,
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: 1000,
+        width: element.offsetWidth + 20
+      },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: ['avoid-all'] }
+    };
+
+    html2pdf().set(opt).from(element).outputPdf('bloburl').then((pdfUrl) => {
+      const printWindow = window.open(pdfUrl, '_blank');
+      if (printWindow) {
+        printWindow.onload = () => {
+          printWindow.print();
+        };
+      } else {
+        alert("Please allow pop-ups to print the receipt.");
+      }
+    });
   };
 
   const downloadReceipt = () => {
@@ -79,12 +101,12 @@ const FeeReceipt = () => {
       filename: `Receipt_${receiptData.studentId || 'N_A'}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { 
-        scale: 3, // Increased scale for ultra-sharp output
+        scale: 3, 
         useCORS: true,
         letterRendering: true,
         scrollX: 0,
         scrollY: 0,
-        windowWidth: 1400,
+        windowWidth: 1000,
         width: element.offsetWidth + 20
       },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
@@ -94,234 +116,265 @@ const FeeReceipt = () => {
   };
 
   if (loadingStudents) return (
-    <div className={styles.loadingScreen}>
-      <Loader2 className={styles.spinner} />
-      <p>Loading Students...</p>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center pt-16">
+      <div className="flex flex-col items-center">
+        <Loader2 size={40} className="text-indigo-600 animate-spin mb-4" />
+        <p className="text-gray-500 font-medium">Loading Student Database...</p>
+      </div>
     </div>
   );
 
   return (
-    <div className={styles.container}>
-      <div className={styles.wrapper}>
+    <div className="w-full py-6 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         
-        {/* Back Navigation */}
-        <button onClick={() => navigate(-1)} className={styles.backLink}>
-          <ArrowLeft size={16} /> Back
+        <button onClick={() => navigate(-1)} className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors mb-2 print:hidden">
+          <ArrowLeft size={16} /> Back to Dashboard
         </button>
 
         {/* Header */}
-        <header className={styles.header}>
-          <div className={styles.headerLeft}>
-            <div className={styles.headerIcon}>
-              <FileText size={28} />
-            </div>
-            <div>
-              <h1 className={styles.title}>Fee Receipt Generator</h1>
-              <p className={styles.subtitle}>Issue professional receipts and manage payment records</p>
-            </div>
+        <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 flex items-center gap-5 relative overflow-hidden print:hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-indigo-50 to-blue-50 rounded-full blur-3xl -mr-32 -mt-32 opacity-70 pointer-events-none"></div>
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-600 to-blue-500 flex items-center justify-center text-white shadow-lg shadow-indigo-200 transform -rotate-3 z-10">
+            <FileText size={32} />
           </div>
-        </header>
+          <div className="z-10">
+            <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Fee Receipt Generator</h1>
+            <p className="text-gray-500 mt-1">Issue professional receipts and manage payment records securely.</p>
+          </div>
+        </div>
 
-        <div className={styles.layout}>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
           {/* Left Panel: Selection */}
-          <aside className={styles.panelLeft}>
-            <div className={styles.card}>
-              <div className={styles.cardHeader}>
-                <Search size={18} />
-                <h2>Find Student</h2>
-              </div>
+          <aside className="lg:col-span-5 xl:col-span-4 flex flex-col gap-6 print:hidden">
+            <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+              <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2"><Search size={20} className="text-indigo-600"/> Find Student</h2>
               
-              <div className={styles.searchBox}>
-                <Input 
+              <div className="relative mb-4 z-20">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                  <Search size={18} />
+                </div>
+                <input
+                  type="text"
                   placeholder="Search by Name or PRN..."
                   value={searchTerm}
                   onChange={(e) => {
                     setSearchTerm(e.target.value);
                     if (selectedStudent) setSelectedStudent(null);
                   }}
-                  icon={Search}
-                  full
+                  className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all outline-none"
                 />
                 
                 {searchTerm && !selectedStudent && (
-                  <div className={styles.searchResults}>
+                  <div className="absolute top-full left-0 w-full mt-2 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50">
                     {filteredStudents.length > 0 ? (
-                      filteredStudents.map(s => (
-                        <button key={s.id} onClick={() => handleStudentSelect(s)} className={styles.searchItem}>
-                          <div className={styles.itemInfo}>
-                            <span className={styles.itemName}>{s.name}</span>
-                            <span className={styles.itemMeta}>{s.studentId} • {s.department}</span>
-                          </div>
-                          <CheckCircle size={16} className={styles.selectIcon} />
-                        </button>
-                      ))
+                      <div className="py-2">
+                        {filteredStudents.map(s => (
+                          <button key={s.id} onClick={() => handleStudentSelect(s)} className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center justify-between group transition-colors">
+                            <div>
+                              <span className="block font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">{s.name}</span>
+                              <span className="block text-xs text-gray-500">{s.studentId} • {s.department}</span>
+                            </div>
+                            <CheckCircle size={18} className="text-gray-300 group-hover:text-indigo-500 transition-colors" />
+                          </button>
+                        ))}
+                      </div>
                     ) : (
-                      <div className={styles.noResults}>No students found</div>
+                      <div className="p-4 text-center text-sm text-gray-500">No students found matching "{searchTerm}"</div>
                     )}
                   </div>
                 )}
               </div>
 
               {selectedStudent && (
-                <div className={styles.selectedStudent}>
-                  <div className={styles.studentBrief}>
-                    <div className={styles.avatar}>
-                      {selectedStudent.name.charAt(0)}
+                <div className="mt-6 animate-in fade-in zoom-in-95 duration-300">
+                  <div className="p-4 bg-indigo-50/50 border border-indigo-100 rounded-2xl mb-6">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center font-bold text-lg text-indigo-600 shadow-sm border border-indigo-100">
+                        {selectedStudent.name.charAt(0)}
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-gray-900">{selectedStudent.name}</h3>
+                        <p className="text-xs text-indigo-600 font-medium">{selectedStudent.studentId} • {selectedStudent.department}</p>
+                      </div>
                     </div>
-                    <div>
-                      <h3>{selectedStudent.name}</h3>
-                      <p>{selectedStudent.studentId} • {selectedStudent.department}</p>
-                    </div>
-                  </div>
-                  
-                  <div className={styles.feeBrief}>
-                    <div className={styles.feeItem}>
-                      <span>Total Fees</span>
-                      <strong>₹{selectedStudent.fees?.total?.toLocaleString()}</strong>
-                    </div>
-                    <div className={styles.feeItem}>
-                      <span>Paid</span>
-                      <strong className={styles.green}>₹{selectedStudent.fees?.paid?.toLocaleString()}</strong>
-                    </div>
-                    <div className={styles.feeItem}>
-                      <span>Pending</span>
-                      <strong className={styles.red}>₹{selectedStudent.fees?.pending?.toLocaleString()}</strong>
+                    
+                    <div className="space-y-3 bg-white p-3 rounded-xl border border-indigo-50">
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-gray-500 font-medium">Total Fees</span>
+                        <span className="font-bold text-gray-900">₹{selectedStudent.fees?.total?.toLocaleString() || 0}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-gray-500 font-medium">Paid</span>
+                        <span className="font-bold text-emerald-600">₹{selectedStudent.fees?.paid?.toLocaleString() || 0}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-sm pt-2 border-t border-gray-100">
+                        <span className="text-gray-500 font-medium">Pending</span>
+                        <span className="font-bold text-rose-600">₹{selectedStudent.fees?.pending?.toLocaleString() || 0}</span>
+                      </div>
                     </div>
                   </div>
 
-                  <Button 
-                    variant="primary" full 
+                  <button 
                     onClick={generateReceipt}
-                    loading={isLoading}
-                    loadingText="Processing..."
+                    disabled={isLoading}
+                    className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl transition-all shadow-md shadow-indigo-200 flex justify-center items-center gap-2 disabled:opacity-70"
                   >
-                    Generate Preview <Sparkles size={16} style={{marginLeft: '8px'}} />
-                  </Button>
+                    {isLoading ? <><Loader2 size={18} className="animate-spin"/> Processing...</> : <>Generate Preview <Sparkles size={18} /></>}
+                  </button>
                 </div>
               )}
             </div>
 
-            <div className={styles.helpCard}>
-              <Info size={18} />
-              <p>Receipts are generated based on the current payment records in the database.</p>
+            <div className="p-4 bg-blue-50 border border-blue-100 rounded-2xl flex items-start gap-3 text-blue-800 text-sm">
+              <Info size={20} className="text-blue-600 mt-0.5 flex-shrink-0" />
+              <p>Receipts are generated dynamically based on the current financial records and payment history in the database.</p>
             </div>
           </aside>
 
           {/* Right Panel: Preview */}
-          <main className={styles.panelRight}>
+          <main className="lg:col-span-7 xl:col-span-8">
             {showReceipt && receiptData ? (
-              <div className={styles.previewCard}>
-                <div className={styles.previewActions}>
-                  <h2>Receipt Preview</h2>
-                  <div className={styles.actionBtns}>
-                    <Button variant="secondary" onClick={printReceipt} className={styles.actionBtn}>
-                      <Printer size={18} /> Print
-                    </Button>
-                    <Button variant="primary" onClick={downloadReceipt} className={styles.actionBtn}>
-                      <Download size={18} /> Download PDF
-                    </Button>
+              <div className="bg-white rounded-3xl p-6 lg:p-8 shadow-sm border border-gray-100 animate-in fade-in zoom-in-95 duration-500 print:p-0 print:border-none print:shadow-none">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 print:hidden">
+                  <h2 className="text-xl font-bold text-gray-900">Receipt Preview</h2>
+                  <div className="flex gap-3">
+                    <button onClick={printReceipt} className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors flex items-center gap-2 text-sm">
+                      <Printer size={16} /> Print
+                    </button>
+                    <button onClick={downloadReceipt} className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl transition-colors shadow-sm shadow-indigo-200 flex items-center gap-2 text-sm">
+                      <Download size={16} /> Download PDF
+                    </button>
                   </div>
                 </div>
 
-                <div id="receipt-download-container" className={styles.receiptContainer}>
-                  <div id="receipt-content" className={styles.receiptPaper}>
-                  <div className={styles.receiptDocHeader}>
-                    <div className={styles.docLogo}>
-                      <GraduationCap size={40} />
+                <div className="bg-gray-50 p-4 sm:p-8 rounded-2xl border border-gray-200 overflow-x-auto print:p-0 print:border-none print:bg-white print:overflow-visible">
+                  
+                  {/* Actual Receipt HTML to be converted to PDF */}
+                  <div id="receipt-content" className="bg-white w-[800px] max-w-full mx-auto p-6 sm:p-8 shadow-sm border border-gray-200 text-gray-800 font-sans relative print:w-full print:shadow-none print:border print:border-gray-300 print:p-6 break-inside-avoid">
+                    
+                    {/* Watermark */}
+                    <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none z-0">
+                      <GraduationCap size={400} />
                     </div>
-                    <div className={styles.docHeaderText}>
-                      <h1 className={styles.docTitle}>ACADEMIC FEE RECEIPT</h1>
-                      <p className={styles.docSubtitle}>Bharat Ratna Indira Gandhi College of Engineering, Solapur</p>
-                      <p className={styles.docAddress}>Kegaon, Solapur - 413255, Maharashtra, India</p>
+
+                    <div className="relative z-10">
+                      {/* Receipt Header */}
+                      <div className="flex items-start gap-6 border-b-2 border-indigo-900 pb-6 mb-6">
+                        <div className="w-20 h-20 bg-indigo-900 text-white rounded-2xl flex items-center justify-center flex-shrink-0">
+                          <GraduationCap size={48} />
+                        </div>
+                        <div>
+                          <h1 className="text-3xl font-black text-indigo-900 tracking-tight mb-1">ACADEMIC FEE RECEIPT</h1>
+                          <p className="text-lg font-bold text-gray-800">Bharat Ratna Indira Gandhi College of Engineering, Solapur</p>
+                          <p className="text-sm text-gray-500">Kegaon, Solapur - 413255, Maharashtra, India</p>
+                        </div>
+                      </div>
+
+                      {/* Receipt Meta */}
+                      <div className="flex justify-between bg-gray-50 p-4 rounded-xl border border-gray-200 mb-6 print:bg-white print:border-gray-300">
+                        <div>
+                          <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Receipt Number</p>
+                          <p className="font-bold text-gray-900">{receiptData.receiptNumber}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Date & Time</p>
+                          <p className="font-bold text-gray-900">{receiptData.date} • {receiptData.time}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Payment Status</p>
+                          <p className={`font-bold ${receiptData.fees?.pending === 0 ? 'text-emerald-600' : 'text-amber-600'}`}>
+                            {receiptData.fees?.pending === 0 ? 'Fully Paid' : 'Partial Payment'}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Student Info */}
+                      <div className="mb-6">
+                        <h3 className="text-lg font-bold text-indigo-900 mb-3 border-b border-gray-200 pb-2">Student Information</h3>
+                        <div className="grid grid-cols-2 gap-y-3 gap-x-8">
+                          <div>
+                            <p className="text-xs font-bold text-gray-500 uppercase">Full Name</p>
+                            <p className="font-semibold text-gray-900 text-lg">{receiptData.name}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs font-bold text-gray-500 uppercase">PRN (Student ID)</p>
+                            <p className="font-semibold text-gray-900 text-lg">{receiptData.studentId}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs font-bold text-gray-500 uppercase">Department</p>
+                            <p className="font-semibold text-gray-900 text-lg">{receiptData.department}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs font-bold text-gray-500 uppercase">Academic Year</p>
+                            <p className="font-semibold text-gray-900 text-lg">Year {receiptData.year}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Financial Summary */}
+                      <div className="mb-6">
+                        <h3 className="text-lg font-bold text-indigo-900 mb-3 border-b border-gray-200 pb-2">Financial Summary</h3>
+                        <table className="w-full text-left mb-6">
+                          <thead className="bg-gray-50 border-y border-gray-200">
+                            <tr>
+                              <th className="py-3 px-4 text-xs font-bold text-gray-500 uppercase">Description</th>
+                              <th className="py-3 px-4 text-xs font-bold text-gray-500 uppercase text-right">Amount (₹)</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-100">
+                            <tr>
+                              <td className="py-4 px-4 font-medium text-gray-900">Annual Tuition Fees</td>
+                              <td className="py-4 px-4 font-medium text-gray-900 text-right">{(receiptData.fees?.total || 0).toLocaleString()}</td>
+                            </tr>
+                            <tr>
+                              <td className="py-4 px-4 font-medium text-gray-600">Scholarship / Adjustments</td>
+                              <td className="py-4 px-4 font-medium text-gray-600 text-right">- 0</td>
+                            </tr>
+                            <tr className="bg-emerald-50/50">
+                              <td className="py-4 px-4 font-bold text-emerald-800">Amount Previously Paid</td>
+                              <td className="py-4 px-4 font-bold text-emerald-600 text-right">{(receiptData.fees?.paid || 0).toLocaleString()}</td>
+                            </tr>
+                          </tbody>
+                          <tfoot className="border-t-2 border-gray-900">
+                            <tr>
+                              <td className="py-4 px-4 font-black text-gray-900 text-lg">Total Settled Amount</td>
+                              <td className="py-4 px-4 font-black text-indigo-700 text-xl text-right">₹{(receiptData.fees?.paid || 0).toLocaleString()}</td>
+                            </tr>
+                          </tfoot>
+                        </table>
+
+                        <div className="flex justify-end p-3 bg-rose-50 border border-rose-100 rounded-xl">
+                          <span className="font-bold text-rose-900 mr-4">Remaining Balance:</span>
+                          <span className="font-black text-rose-700 text-lg">₹{(receiptData.fees?.pending || 0).toLocaleString()}</span>
+                        </div>
+                      </div>
+
+                      {/* Footer */}
+                      <div className="mt-8 pt-4 border-t border-gray-200 grid grid-cols-2 items-end">
+                        <div className="text-xs text-gray-500 space-y-1 pr-4">
+                          <p className="font-semibold text-gray-700">Notice:</p>
+                          <p>This is a computer-generated electronic receipt.</p>
+                          <p>No physical signature is required for validity.</p>
+                          <p className="mt-2 text-indigo-900 font-semibold">Issued by: College Management System • {new Date().getFullYear()}</p>
+                        </div>
+                        <div className="text-right flex flex-col items-end">
+                          <div className="w-48 border-b border-gray-400 mb-2"></div>
+                          <p className="font-bold text-gray-900 text-sm w-48 text-center">Authorized Signatory</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
-
-                  <div className={styles.docMetaGrid}>
-                    <div className={styles.docMetaBox}>
-                      <span className={styles.docMetaLabel}>Receipt Number</span>
-                      <span className={styles.docMetaValue}>#{receiptData.receiptNumber}</span>
-                    </div>
-                    <div className={styles.docMetaBox}>
-                      <span className={styles.docMetaLabel}>Date & Time</span>
-                      <span className={styles.docMetaValue}>{receiptData.date} • {receiptData.time}</span>
-                    </div>
-                    <div className={styles.docMetaBox}>
-                      <span className={styles.docMetaLabel}>Payment Status</span>
-                      <span className={`${styles.docStatusBadge} ${receiptData.fees?.pending === 0 ? styles.statusPaid : styles.statusPending}`}>
-                        {receiptData.fees?.pending === 0 ? 'Fully Paid' : 'Partial Payment'}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className={styles.docSection}>
-                    <h3 className={styles.docSectionTitle}>Student Information</h3>
-                    <div className={styles.docInfoGrid}>
-                      <div className={styles.docInfoItem}>
-                        <span className={styles.docLabel}>Full Name</span>
-                        <span className={styles.docValue}>{receiptData.name}</span>
-                      </div>
-                      <div className={styles.docInfoItem}>
-                        <span className={styles.docLabel}>PRN (Student ID)</span>
-                        <span className={styles.docValue}>{receiptData.studentId}</span>
-                      </div>
-                      <div className={styles.docInfoItem}>
-                        <span className={styles.docLabel}>Department</span>
-                        <span className={styles.docValue}>{receiptData.department}</span>
-                      </div>
-                      <div className={styles.docInfoItem}>
-                        <span className={styles.docLabel}>Academic Year</span>
-                        <span className={styles.docValue}>{receiptData.year} Year</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className={styles.docSection}>
-                    <h3 className={styles.docSectionTitle}>Financial Summary</h3>
-                    <div className={styles.docFeeTable}>
-                      <div className={styles.feeRow}>
-                        <span>Annual Tuition Fees</span>
-                        <span>₹{(receiptData.fees?.total || 0).toLocaleString()}</span>
-                      </div>
-                      <div className={styles.feeRow}>
-                        <span>Scholarship / Adjustments</span>
-                        <span>- ₹0</span>
-                      </div>
-                      <div className={styles.feeRow}>
-                        <span>Amount Previously Paid</span>
-                        <span>₹{(receiptData.fees?.paid || 0).toLocaleString()}</span>
-                      </div>
-                      <div className={`${styles.feeRow} ${styles.feeTotal}`}>
-                        <span>Total Settled Amount</span>
-                        <span>₹{(receiptData.fees?.paid || 0).toLocaleString()}</span>
-                      </div>
-                    </div>
-                    <div className={styles.balanceNote}>
-                      <span>Remaining Balance:</span>
-                      <strong className={styles.red}>₹{(receiptData.fees?.pending || 0).toLocaleString()}</strong>
-                    </div>
-                  </div>
-
-                  <div className={styles.docFooter}>
-                    <div className={styles.signatureArea}>
-                      <div className={styles.signatureLine}></div>
-                      <span>Authorized Signatory</span>
-                    </div>
-                    <div className={styles.docNotice}>
-                      <p>This is a computer-generated electronic receipt. No physical signature is required for validity.</p>
-                      <p>Issued by: College Management System • {new Date().getFullYear()}</p>
-                    </div>
-                    </div>
-                </div>
                 </div>
               </div>
             ) : (
-              <div className={styles.emptyPreview}>
-                <div className={styles.emptyIcon}>
-                  <FileText size={48} />
+              <div className="bg-white rounded-3xl p-12 shadow-sm border border-gray-100 h-full flex flex-col items-center justify-center text-center">
+                <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6">
+                  <FileText size={40} className="text-gray-300" />
                 </div>
-                <h3>No Preview Available</h3>
-                <p>Select a student and click "Generate Preview" to see the receipt here.</p>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">No Preview Available</h3>
+                <p className="text-gray-500 max-w-sm">Select a student from the panel and click "Generate Preview" to view and download their fee receipt.</p>
               </div>
             )}
           </main>
@@ -330,11 +383,5 @@ const FeeReceipt = () => {
     </div>
   );
 };
-
-const Info = ({ size }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
-  </svg>
-);
 
 export default FeeReceipt;

@@ -58,7 +58,11 @@ export const applyForScholarship = async (req, res, next) => {
       isMinority,
       previousYearMarks,
       bankDetails,
-      documentUrls
+      documentUrls,
+      estimatedAmount,
+      studentName: student.name,
+      studentRollNo: student.studentId,
+      department: student.department
     });
 
     await application.save();

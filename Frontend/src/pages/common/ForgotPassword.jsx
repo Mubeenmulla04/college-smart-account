@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import styles from '../../styles/Login.module.css';
+import { Mail, ArrowLeft, KeyRound, CheckCircle2, AlertCircle } from 'lucide-react';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -52,113 +52,85 @@ const ForgotPassword = () => {
 
   if (isSuccess) {
     return (
-      <div className={styles.loginContainer}>
-        <div className={styles.loginForm}>
-          <div className={styles.loginCard}>
-            <div className={styles.loginHeader}>
-              <div className={styles.loginLogo}>
-                <span className={styles.loginLogoIcon}>✅</span>
-              </div>
-              <h2 className={styles.loginTitle}>
-                Check Your Email
-              </h2>
-              <p className={styles.loginSubtitle}>
-                We've sent password reset instructions to {email}
-              </p>
-            </div>
-
-            <div className={styles.successMessage}>
-              <p>
-                If you don't see the email in your inbox, please check your spam folder.
-              </p>
-              <p>
-                The reset link will expire in 24 hours for security reasons.
-              </p>
-            </div>
-
-            <div className={styles.backToLogin}>
-              <Link to="/login" className={styles.backLink}>
-                ← Back to Login
-              </Link>
-            </div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 selection:bg-blue-100">
+        <div className="max-w-md w-full bg-white rounded-3xl shadow-xl border border-gray-100 p-8 sm:p-10 animate-in fade-in zoom-in-95 duration-300">
+          <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-6 transform -rotate-6">
+            <CheckCircle2 size={32} strokeWidth={1.5} />
           </div>
+          <h2 className="text-2xl font-bold text-center text-gray-900 mb-2">Check Your Email</h2>
+          <p className="text-center text-gray-500 mb-6">
+            We've sent password reset instructions to <strong className="text-gray-900">{email}</strong>
+          </p>
+
+          <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-4 text-sm text-blue-800 mb-8 space-y-2">
+            <p>If you don't see the email in your inbox, please check your spam folder.</p>
+            <p>The reset link will expire in 24 hours for security reasons.</p>
+          </div>
+
+          <Link
+            to="/login"
+            className="w-full py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-all duration-200 flex justify-center items-center gap-2"
+          >
+            <ArrowLeft size={16} /> Back to Login
+          </Link>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={styles.loginContainer}>
-      <div className={styles.loginForm}>
-        <div className={styles.loginCard}>
-          <div className={styles.loginHeader}>
-            <div className={styles.loginLogo}>
-              <span className={styles.loginLogoIcon}>🔑</span>
-            </div>
-            <h2 className={styles.loginTitle}>
-              Reset Your Password
-            </h2>
-            <p className={styles.loginSubtitle}>
-              Enter your email address and we'll send you instructions to reset your password.
-            </p>
-          </div>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 selection:bg-blue-100">
+      <div className="max-w-md w-full bg-white rounded-3xl shadow-xl border border-gray-100 p-8 sm:p-10 animate-in fade-in zoom-in-95 duration-300">
+        <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 transform -rotate-6">
+          <KeyRound size={32} strokeWidth={1.5} />
+        </div>
+        <h2 className="text-2xl font-bold text-center text-gray-900 mb-2">Reset Password</h2>
+        <p className="text-center text-gray-500 mb-8">
+          Enter your email address and we'll send you instructions to reset your password.
+        </p>
 
-          <form className={styles.form} onSubmit={handleSubmit}>
-            <div className={styles.inputGroup}>
+        {errors.general && (
+          <div className="mb-6 p-4 bg-red-50 text-red-700 text-sm rounded-xl border border-red-100 flex gap-3 items-start animate-in fade-in">
+            <AlertCircle size={18} className="mt-0.5 flex-shrink-0" />
+            <p>{errors.general}</p>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Email Address</label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                <Mail size={18} />
+              </div>
               <input
                 type="email"
                 name="email"
-                autoComplete="email"
-                required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className={`${styles.emailInput} ${errors.email ? styles.inputError : ''}`}
+                className={`w-full pl-10 pr-4 py-3 rounded-xl border ${errors.email ? 'border-red-300 focus:ring-red-100' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100'} bg-gray-50/50 focus:bg-white outline-none focus:ring-4 transition-all duration-200 text-gray-900`}
                 placeholder="Enter your email address"
               />
             </div>
+            {errors.email && <p className="mt-1.5 text-sm text-red-500">{errors.email}</p>}
+          </div>
 
-            {errors.email && (
-              <p className={styles.errorMessage}>{errors.email}</p>
-            )}
-            
-            {errors.general && (
-              <p className={styles.generalError}>{errors.general}</p>
-            )}
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-all duration-200 shadow-lg shadow-blue-200 flex justify-center items-center disabled:opacity-70"
+          >
+            {isLoading ? 'Sending...' : 'Send Reset Instructions'}
+          </button>
+        </form>
 
-            <div>
-              <button
-                type="submit"
-                disabled={isLoading}
-                className={styles.submitButton}
-              >
-                {isLoading ? 'Sending...' : 'Send Reset Instructions'}
-              </button>
-            </div>
-
-            <div className={styles.backToLogin}>
-              <Link to="/login" className={styles.backLink}>
-                ← Back to Login
-              </Link>
-            </div>
-
-            {/* <div className={styles.demoCredentials}>
-              <p className={styles.demoTitle}>
-                Available demo accounts:
-              </p>
-              <p className={styles.demoText}>
-                john.doe@student.edu
-              </p>
-              <p className={styles.demoText}>
-                jane.smith@student.edu
-              </p>
-              <p className={styles.demoText}>
-                mike.wilson@student.edu
-              </p>
-              <p className={styles.demoText}>
-                admin@college.edu
-              </p>
-            </div> */}
-          </form>
+        <div className="mt-8 text-center">
+          <Link
+            to="/login"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors"
+          >
+            <ArrowLeft size={16} /> Back to Login
+          </Link>
         </div>
       </div>
     </div>

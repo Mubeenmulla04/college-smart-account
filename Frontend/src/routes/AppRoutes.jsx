@@ -26,6 +26,7 @@ import PaymentHistory from '../pages/student/PaymentHistory';
 
 // Components
 import Navbar from '../components/Navbar';
+
 import Footer from '../components/Footer';
 import ScrollToTop from '../components/ScrollToTop';
 
@@ -59,13 +60,17 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 const Layout = ({ children }) => {
   const { isAuthenticated } = useAuth();
 
+  if (!isAuthenticated) return children;
+
   return (
-    <div className="min-h-screen flex flex-col">
-      {isAuthenticated && <Navbar />}
-      <main className="flex-1">
+    <div className="flex flex-col flex-1 w-full">
+      <Navbar />
+      
+      <main className="flex-1 w-full pt-16">
         {children}
       </main>
-      {isAuthenticated && <Footer />}
+      
+      <Footer />
     </div>
   );
 };

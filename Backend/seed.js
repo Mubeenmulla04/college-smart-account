@@ -9,11 +9,12 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, '.env') });
 
 // Import Models
-import Student from '../Database/Models/Student.js';
-import Admin from '../Database/Models/Admin.js';
-import Department from '../Database/Models/Department.js';
-import Scholarship from '../Database/Models/Scholarship.js';
-import FeeReceipt from '../Database/Models/FeeReceipt.js';
+import Student from './models/Student.js';
+import Admin from './models/Admin.js';
+import Department from './models/Department.js';
+import Scholarship from './models/Scholarship.js';
+import FeeReceipt from './models/FeeReceipt.js';
+import ScholarshipApplication from './models/ScholarshipApplication.js';
 
 const demoData = {
   admins: [
@@ -77,6 +78,7 @@ const seedDatabase = async () => {
     await Department.deleteMany({});
     await Scholarship.deleteMany({});
     await FeeReceipt.deleteMany({});
+    await ScholarshipApplication.deleteMany({});
     console.log('Cleared existing data.');
 
     // Insert new data (using save() to trigger pre-save hooks for hashing)
